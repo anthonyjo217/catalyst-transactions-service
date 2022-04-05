@@ -12,6 +12,7 @@ import { EmployeesController } from './employees.controller';
       {
         name: EmployeeModel.name,
         schema: EmployeeSchema,
+        collection: 'employees',
       },
     ]),
   ],
