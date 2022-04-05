@@ -22,5 +22,6 @@ import {
   ],
   controllers: [CustomerLeadsController],
   providers: [CustomerLeadsService],
+  exports: [CustomerLeadsService],
 })
 export class CustomerLeadsModule {}

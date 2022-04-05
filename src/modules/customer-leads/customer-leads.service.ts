@@ -69,7 +69,7 @@ export class CustomerLeadsService {
     return { users, next: { startId: newStartId } };
   }
 
-  async findOne(id: string) {
+  async findOne(id: string | number) {
     const user = await this.customerLeadProvider
       .findOne({ _id: id }, { refresh_token: 0, password: 0 })
       .lean();

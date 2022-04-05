@@ -30,7 +30,7 @@ export class EmployeesService {
     return rest;
   }
 
-  async setRefreshToken(id: string, token: string | null) {
+  async setRefreshToken(id: number, token: string | null) {
     return this.employeeProvider.updateOne(
       { _id: id },
       { refreshToken: token },
