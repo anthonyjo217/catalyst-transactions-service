@@ -103,7 +103,7 @@ export class AppController {
     if (dto.type === USER_TYPES.SALESREP) {
       return await this.employeeService.create(dto.fields);
     } else {
-      await this.customerLeadService.create(dto);
+      return await this.customerLeadService.create(dto);
     }
   }
 }

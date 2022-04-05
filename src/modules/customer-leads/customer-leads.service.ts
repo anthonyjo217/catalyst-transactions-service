@@ -42,8 +42,6 @@ export class CustomerLeadsService {
         ]
       : [];
 
-    console.log({ querySearch });
-
     const users = await this.customerLeadProvider
       .aggregate([
         ...querySearch,
@@ -139,6 +137,7 @@ export class CustomerLeadsService {
         method: 'CustomerController.create',
         values: lead,
       };
+      return request;
       const { data } = await firstValueFrom(
         this.httpService.post(process.env.NETSUITE_SERVICE, request, {
           headers: {
@@ -162,6 +161,7 @@ export class CustomerLeadsService {
         method: 'CustomerController.updateOrCreateAddress',
         values: dto,
       };
+      return request;
       const { data } = await firstValueFrom(
         this.httpService.post(process.env.NETSUITE_SERVICE, request, {
           headers: {
