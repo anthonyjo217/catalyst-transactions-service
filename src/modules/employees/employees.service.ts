@@ -16,7 +16,7 @@ export class EmployeesService {
   ) {}
 
   async validate(email: string, password: string) {
-    const employee = await this.employeeProvider.findOne({ email });
+    const employee = await this.employeeProvider.findOne({ email }).lean();
 
     if (!employee) {
       return null;

@@ -21,7 +21,7 @@ export class CustomerLeadsController {
 
   @Get(':id')
   async getUser(@Param('id') id: string) {
-    return this.customerLeadsService.findOne(id);
+    return this.customerLeadsService.findOne(+id);
   }
 
   @Post()

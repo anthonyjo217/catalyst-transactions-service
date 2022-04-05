@@ -35,14 +35,14 @@ export class CustomerLeadsService {
               index: 'search-by-entity',
               text: {
                 query,
-                path: {
-                  wildcard: '*',
-                },
+                path: ['firstname', 'lastname', 'email'],
               },
             },
           },
         ]
       : [];
+
+    console.log({ querySearch });
 
     const users = await this.customerLeadProvider
       .aggregate([
@@ -69,7 +69,7 @@ export class CustomerLeadsService {
     return { users, next: { startId: newStartId } };
   }
 
-  async findOne(id: string | number) {
+  async findOne(id: number) {
     const user = await this.customerLeadProvider
       .findOne({ _id: id }, { refresh_token: 0, password: 0 })
       .lean();

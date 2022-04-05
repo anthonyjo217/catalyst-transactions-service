@@ -18,8 +18,8 @@ export enum USER_TYPES {
 
 export class AddressLine {
   @IsString()
-  @Transform(({ value }) => value)
-  id: string;
+  @Transform(({ value }) => Number(value))
+  id: number;
 
   @Transform(({ value }) => value === 'T')
   @Expose({ name: 'isresidential' })
