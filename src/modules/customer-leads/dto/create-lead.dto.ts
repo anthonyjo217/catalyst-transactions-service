@@ -12,6 +12,7 @@ import {
   IsMobilePhone,
   IsBoolean,
   IsNumberString,
+  ValidateIf,
 } from 'class-validator';
 
 export class CreateLeadDTO {
@@ -20,11 +21,13 @@ export class CreateLeadDTO {
   @Expose({ name: '_id' })
   id?: number;
 
+  @ValidateIf((object) => !Boolean(object.id))
   @IsString()
   @IsNotEmpty()
   @Expose({ name: 'firstname' })
   firstname: string;
 
+  @ValidateIf((object) => !Boolean(object.id))
   @IsString()
   @IsNotEmpty()
   @Expose({ name: 'lastname' })
@@ -34,6 +37,7 @@ export class CreateLeadDTO {
   @IsEmail()
   email?: string;
 
+  @ValidateIf((object) => !Boolean(object.id))
   @IsMobilePhone(['en-US'])
   mobilephone: string;
 
