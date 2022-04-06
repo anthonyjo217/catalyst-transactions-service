@@ -1,4 +1,4 @@
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
@@ -6,15 +6,14 @@ import * as bodyParser from 'body-parser';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    cors: {
-      credentials: true,
-      origin: [
-        'https://ts.tissini.build',
-        'https://ts.tissini.cloud',
-        'http://localhost:3000',
-      ],
-    },
+  const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    credentials: true,
+    origin: [
+      'https://ts.tissini.build',
+      'https://ts.tissini.cloud',
+      'http://localhost:3000',
+    ],
   });
   const port = process.env.PORT || 3030;
   app.use(cookieParser());
@@ -34,5 +33,6 @@ async function bootstrap() {
     }),
   );
   await app.listen(port);
+  Logger.log(`🚀 USER-SERVICE IS RUNNING IN PORT: ${port}`);
 }
 bootstrap();

@@ -54,6 +54,7 @@ export class AppController {
     return this.customerLeadService.findAll(id, +limit, +startId, skip, query);
   }
 
+  @IsPublic()
   @Get(':id')
   async getUser(@Param('id', new ParseIntPipe()) id: number) {
     return this.customerLeadService.findOne(id);
