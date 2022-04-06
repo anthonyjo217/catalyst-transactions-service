@@ -36,6 +36,7 @@
     "class-validator": "^0.13.2",
     "cookie-parser": "^1.4.6",
     "mongoose": "^6.2.10",
+    "mongoose-paginate-v2": "^1.6.3",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",

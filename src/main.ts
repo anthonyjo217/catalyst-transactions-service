@@ -13,7 +13,7 @@ async function bootstrap() {
       'https://ts.tissini.build',
       'https://ts.tissini.cloud',
       'http://localhost:3000',
-    ],
+    ], // TODO pass to env
   });
   const port = process.env.PORT || 3030;
   app.use(cookieParser());

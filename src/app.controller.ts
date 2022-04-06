@@ -47,14 +47,18 @@ export class AppController {
   @Get()
   async getUsers(
     @Req() req,
-    @Query() { limit, skip, startId, query }: PaginationParams,
+    @Query() { query, limit, page }: PaginationParams,
   ) {
     const { user } = req;
     const id = `${user._id}`;
-    return this.customerLeadService.findAll(id, +limit, +startId, skip, query);
+    return this.customerLeadService.paginate(
+      +page || 1,
+      +limit || 10,
+      id,
+      query,
+    );
   }
 
-  @IsPublic()
   @Get(':id')
   async getUser(@Param('id', new ParseIntPipe()) id: number) {
     return this.customerLeadService.findOne(id);

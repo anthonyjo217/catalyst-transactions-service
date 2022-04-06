@@ -10,13 +10,15 @@ export class CustomerLeadsController {
   constructor(private readonly customerLeadsService: CustomerLeadsService) {}
 
   @Get()
-  async getAll(
-    @Req() req,
-    @Query() { limit, skip, startId, query }: PaginationParams,
-  ) {
+  async getAll(@Req() req, @Query() { limit, page, query }: PaginationParams) {
     const { user } = req;
     const id = `${user._id}`;
-    return this.customerLeadsService.findAll(id, +limit, +startId, skip, query);
+    return this.customerLeadsService.paginate(
+      page || 1,
+      limit || 10,
+      id,
+      query,
+    );
   }
 
   @Get(':id')

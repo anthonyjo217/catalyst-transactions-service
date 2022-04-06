@@ -53,9 +53,9 @@ export class CreateLeadDTO {
   custentity_dream_in_money: number;
 
   @IsOptional()
-  @IsInt()
+  @IsNumberString()
   @Expose({ name: 'salesrep_id' })
-  salesrep: number;
+  salesrep: string;
 
   @IsOptional()
   @IsString()
