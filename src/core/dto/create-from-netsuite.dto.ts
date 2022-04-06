@@ -702,10 +702,6 @@ export class Fields extends EmployeeFields {
   purchase_type: number;
 
   @IsOptional()
-  @Expose({ name: 'custentity10' })
-  reffered_by: string;
-
-  @IsOptional()
   @IsString()
   homephone: string;
 

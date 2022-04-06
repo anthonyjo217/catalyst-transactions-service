@@ -130,7 +130,7 @@ export class CreateLeadDTO {
 
   @IsOptional()
   @IsNumberString()
-  @Expose({ name: 'reffered_by' })
+  @Expose({ name: 'referred_by' })
   custentity10: string;
 
   @IsOptional()

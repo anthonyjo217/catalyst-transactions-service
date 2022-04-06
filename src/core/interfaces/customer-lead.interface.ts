@@ -114,7 +114,6 @@ export interface CustomerLead extends User {
   rango_edad: number;
   time_zone: number;
   purchase_type: number;
-  reffered_by: string;
   homephone: string;
   ocupacion: string;
   first_child_name: string;

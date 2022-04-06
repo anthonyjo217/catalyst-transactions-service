@@ -13,6 +13,7 @@ export interface CreateToNetsuiteDTO {
   custentity_pinterest_id?: string;
   custentity_facebook_id?: string;
   custentity1?: string;
+  custentity10?: string;
   custentity_kissts01_time_zone: number;
   custentity_rango_edad: string;
   custentity_tissiniapp_rma_available: boolean;

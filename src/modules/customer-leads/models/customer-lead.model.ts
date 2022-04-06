@@ -19,9 +19,6 @@ export class CustomerLeadModel extends UserModel implements CustomerLead {
   purchase_type: number;
 
   @Prop()
-  reffered_by: string;
-
-  @Prop()
   homephone: string;
 
   @Prop()
