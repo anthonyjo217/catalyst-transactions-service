@@ -6,10 +6,11 @@ import { EmployeesModule } from './modules/employees/employees.module';
 import { CustomerLeadsModule } from './modules/customer-leads/customer-leads.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CoreModule } from './core/core.module';
-
+import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.MONGO_HOST),
+    ConfigModule.forRoot(),
+    MongooseModule.forRoot(process.env.MONGODB_HOST),
     EmployeesModule,
     CustomerLeadsModule,
     AuthModule,

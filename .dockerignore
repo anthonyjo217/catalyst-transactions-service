@@ -1,0 +1,9 @@
+**/.git
+**/.vscode
+**/k8s
+**/node_modules
+**/.vscode
+.env
+.prod.env
+.dev.env
+node_modules

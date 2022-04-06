@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev-catalyst-user-service
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-catalyst-user-service
+  namespace: dev-catalyst-user-service
+spec:
+  selector:
+    app: dev-catalyst-user-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-catalyst-user-service-deployment
+  namespace: dev-catalyst-user-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dev-catalyst-user-service
+  template:
+    metadata:
+      labels:
+        app: dev-catalyst-user-service
+    spec:
+      containers:
+        - name: dev-catalyst-user-service
+          image: ferchoslim/dev-catalyst-user-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: APP_MODE
+              value: dev
+            - name: MONGODB_HOST
+              value: 'mongodb+srv://KwVb6NrI4l2ZWWoG:FKrv956U7CKPnhv8@user-service.cpp1k.mongodb.net/users?authSource=admin&replicaSet=atlas-30lvev-shard-0&w=majority&readPreference=primary&retryWrites=true&ssl=true'
+            - name: USER_SERVICE_PORT
+              value: '3000'
+            - name: JWT_SECRET
+              value: kcb4fHf4121aMPZnRW6W4gVf771rXAVC
+            - name: JWT_REFRESH_SECRET
+              value: 1khu4bUaqs0dvTd6CBA5J7ml2Dw30qHM
+            - name: NETSUITE_API_KEY
+              value: 9c9fe760-dbcb-4de3-a625-1681c731c89b
+            - name: NETSUITE_SERVICE
+              value: https://ns.tissini.cloud/api/v1/1539/1
+            - name: API_KEY
+              value: 41bc00f9-2f03-45f8-99e6-15441620f8ff
