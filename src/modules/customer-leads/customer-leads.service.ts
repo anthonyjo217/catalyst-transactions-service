@@ -70,11 +70,17 @@ export class CustomerLeadsService {
   async paginate(page: number, limit: number, id?: string, search?: string) {
     const query = search ? { $text: { $search: search } } : { salesrep_id: id };
 
-    return this.customerLeadProvider.paginate(query, {
-      page,
-      limit,
-      projection: userProject,
-    });
+    return this.customerLeadProvider.paginate(
+      {
+        ...query,
+        isinactive: false,
+      },
+      {
+        page,
+        limit,
+        projection: userProject,
+      },
+    );
   }
 
   async findOne(id: number) {
