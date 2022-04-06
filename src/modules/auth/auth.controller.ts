@@ -26,6 +26,7 @@ const COOKIES_OPTIONS: CookieOptions = {
   sameSite: 'none',
   maxAge: EXP_TIME,
   secure: true,
+  domain: 'tissini.build',
 };
 
 @Controller({
