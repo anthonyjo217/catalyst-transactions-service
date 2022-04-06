@@ -44,7 +44,6 @@ export class AppController {
     res.status(HttpStatus.OK).json({ status: 'OK' });
   }
 
-  @IsPublic()
   @Get()
   async getUsers(
     @Req() req,
@@ -60,7 +59,6 @@ export class AppController {
     );
   }
 
-  @IsPublic()
   @Get(':id')
   async getUser(@Param('id', new ParseIntPipe()) id: number) {
     return this.customerLeadService.findOne(id);

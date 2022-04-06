@@ -157,8 +157,7 @@ export class CustomerLeadsService {
       );
       return { data };
     } catch (error) {
-      console.log(error);
-      throw new Error('Something went bad');
+      throw new Error('An error ocurred while creating lead');
     }
   }
 

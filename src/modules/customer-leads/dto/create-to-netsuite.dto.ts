@@ -6,7 +6,7 @@ export interface CreateToNetsuiteDTO {
   mobilephone: string;
   custentitydream_1: string;
   custentity_dream_in_money: number;
-  salesrep: number;
+  salesrep: string;
   custentity_multivendor_store_name?: string;
   custentity_instagram_id?: string;
   custentity_twitter_id?: string;
