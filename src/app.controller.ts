@@ -44,14 +44,20 @@ export class AppController {
     res.status(HttpStatus.OK).json({ status: 'OK' });
   }
 
+  @IsPublic()
   @Get()
   async getUsers(
     @Req() req,
-    @Query() { limit, skip, startId, query }: PaginationParams,
+    @Query() { query, limit, page }: PaginationParams,
   ) {
     const { user } = req;
     const id = `${user._id}`;
-    return this.customerLeadService.findAll(id, +limit, +startId, skip, query);
+    return this.customerLeadService.paginate(
+      +page || 1,
+      +limit || 10,
+      id,
+      query,
+    );
   }
 
   @IsPublic()

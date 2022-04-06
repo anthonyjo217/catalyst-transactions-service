@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import * as mongopaginate from 'mongoose-paginate-v2';
 
 import { Address } from '~core/interfaces/address.interface';
 import {
@@ -374,3 +375,5 @@ export class CustomerLeadModel extends UserModel implements CustomerLead {
 
 export const CustomerLeadSchema =
   SchemaFactory.createForClass(CustomerLeadModel);
+
+CustomerLeadSchema.plugin(mongopaginate);

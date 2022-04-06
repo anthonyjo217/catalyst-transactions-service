@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { PaginateModel } from 'mongoose';
 import { firstValueFrom } from 'rxjs';
 import { CreateFromNetsuiteDTO } from '~core/dto/create-from-netsuite.dto';
 import {
@@ -23,7 +23,7 @@ import { userProject } from './projects/user.project';
 export class CustomerLeadsService {
   constructor(
     @InjectModel(CustomerLeadModel.name)
-    private customerLeadProvider: Model<CustomerLeadModel>,
+    private customerLeadProvider: PaginateModel<CustomerLeadModel>,
     private httpService: HttpService,
   ) {}
 
@@ -65,6 +65,16 @@ export class CustomerLeadsService {
     }
 
     return { users, next: { startId: newStartId } };
+  }
+
+  async paginate(page: number, limit: number, id?: string, search?: string) {
+    const query = search ? { $text: { $search: search } } : { salesrep_id: id };
+
+    return this.customerLeadProvider.paginate(query, {
+      page,
+      limit,
+      projection: userProject,
+    });
   }
 
   async findOne(id: number) {

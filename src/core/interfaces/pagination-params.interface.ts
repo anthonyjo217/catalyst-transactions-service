@@ -1,6 +1,5 @@
 export interface PaginationParams {
-  startId?: number;
-  skip?: number;
+  page?: number;
   limit?: number;
   query: string;
 }
