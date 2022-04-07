@@ -26,7 +26,7 @@ const COOKIES_OPTIONS: CookieOptions = {
   sameSite: 'none',
   maxAge: EXP_TIME,
   secure: true,
-  domain: 'tissini.build', // ! TODO pass to env
+  domain: 'tissini.cloud', // ! TODO pass to env
 };
 
 @Controller({
