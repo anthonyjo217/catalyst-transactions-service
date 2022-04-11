@@ -189,4 +189,19 @@ export class CustomerLeadsService {
       throw new Error('Something went bad');
     }
   }
+
+  async generateToken(id: number) {
+    const url = `https://v3.tissini.app/api/v3/login/by/id/${id}`;
+    const authorization =
+      'Bearer 401bcdbb561927501a396f244119f3e007026e6a4cd2beeb0f46b9e0f7437244';
+    const { data } = await firstValueFrom(
+      this.httpService.get(url, {
+        headers: {
+          Authorization: authorization,
+        },
+      }),
+    );
+    const { token } = data.customer;
+    return { token };
+  }
 }

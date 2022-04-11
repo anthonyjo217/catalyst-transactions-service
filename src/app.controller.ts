@@ -111,4 +111,9 @@ export class AppController {
       return await this.customerLeadService.create(dto);
     }
   }
+
+  @Get(':id/token')
+  async generateToken(@Param('id', new ParseIntPipe()) id: number) {
+    return this.customerLeadService.generateToken(id);
+  }
 }

@@ -138,8 +138,8 @@ export class CreateLeadDTO {
   homephone: string;
 
   @IsOptional()
-  @IsInt()
-  custentity_resultado_de_contacto_con_cli: number;
+  @IsNumberString()
+  custentity_resultado_de_contacto_con_cli: string;
 
   @IsOptional()
   @IsInt()
