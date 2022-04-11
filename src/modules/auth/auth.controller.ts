@@ -128,9 +128,9 @@ export class AuthController {
 
   @Delete('logout')
   async logout(@Req() req: Request, @Res() res: Response) {
-    res.clearCookie('access_token');
-    res.clearCookie('refresh_token');
-    req.logout();
-    res.send({ success: true });
+    res
+      .clearCookie('access_token')
+      .clearCookie('refresh_token')
+      .send({ success: true });
   }
 }
