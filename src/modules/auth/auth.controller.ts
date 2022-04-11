@@ -21,7 +21,7 @@ import { LoginDTO } from './dto/login.dto';
 import { PhonenumberLoginDTO } from './dto/phonenumber-login.dto';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 
-const EXP_TIME = 1000 * 60 * 60 * 24 * 365;
+const EXP_TIME = 1000 * 60 * 60 * 24 * 365; // ! 1 year
 export const COOKIES_OPTIONS: CookieOptions = {
   sameSite: 'none',
   maxAge: EXP_TIME,
@@ -128,8 +128,8 @@ export class AuthController {
 
   @Delete('logout')
   async logout(@Req() req: Request, @Res() res: Response) {
-    res.clearCookie('access_token', COOKIES_OPTIONS);
-    res.clearCookie('refresh_token', COOKIES_OPTIONS);
+    res.clearCookie('access_token');
+    res.clearCookie('refresh_token');
     req.logout();
     res.send({ success: true });
   }
