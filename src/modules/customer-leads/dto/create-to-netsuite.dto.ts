@@ -20,8 +20,10 @@ export interface CreateToNetsuiteDTO {
   custentity_state_restriction_override: boolean;
   custentity4: string;
   custentity5: string;
+  custentity_resultado_de_contacto_con_cli: string;
   custentity6: string;
   custentity8: string;
+
   addresses: AddressDTO[];
 }
 
