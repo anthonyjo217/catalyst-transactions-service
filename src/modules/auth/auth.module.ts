@@ -18,7 +18,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     PassportModule.register({}),
     JwtModule.register({
       signOptions: {
-        expiresIn: `${2 * 60 * 60}s`,
+        expiresIn: '1y',
       },
     }),
     CustomerLeadsModule,

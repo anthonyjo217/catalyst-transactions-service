@@ -21,8 +21,8 @@ import { LoginDTO } from './dto/login.dto';
 import { PhonenumberLoginDTO } from './dto/phonenumber-login.dto';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 
-const EXP_TIME = 2 * 60 * 60 * 1000;
-const COOKIES_OPTIONS: CookieOptions = {
+const EXP_TIME = 1000 * 60 * 60 * 24 * 365;
+export const COOKIES_OPTIONS: CookieOptions = {
   sameSite: 'none',
   maxAge: EXP_TIME,
   secure: true,
