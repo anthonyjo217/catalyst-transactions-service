@@ -17,9 +17,9 @@ import {
 
 export class CreateLeadDTO {
   @IsOptional()
-  @IsInt()
+  @IsNumberString()
   @Expose({ name: '_id' })
-  id?: number;
+  id?: string;
 
   @ValidateIf((object) => !Boolean(object.id))
   @IsString()
