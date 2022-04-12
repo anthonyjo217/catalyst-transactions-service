@@ -51,10 +51,10 @@ export class AppController {
   ) {
     const { user } = req;
     const id = `${user._id}`;
-    return this.customerLeadService.paginate(
-      +page || 1,
-      +limit || 10,
+    return this.customerLeadService.findAll(
       id,
+      +page || 1,
+      +limit || 20,
       query,
     );
   }
