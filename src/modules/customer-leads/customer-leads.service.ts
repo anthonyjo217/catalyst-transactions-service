@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { PaginateModel } from 'mongoose';
+import { PaginateModel, PaginateResult } from 'mongoose';
 import { firstValueFrom } from 'rxjs';
 import { CreateFromNetsuiteDTO } from '~core/dto/create-from-netsuite.dto';
 import {
@@ -27,7 +27,7 @@ export class CustomerLeadsService {
     private httpService: HttpService,
   ) {}
 
-  async findAll(id: string, limit = 20, startId = 322, skip = 0, query = '') {
+  async findAll(id: string, page = 1, limit = 10, query?: string) {
     const querySearch = query
       ? [
           {
@@ -35,22 +35,26 @@ export class CustomerLeadsService {
               index: 'search-by-entity',
               text: {
                 query,
-                path: ['firstname', 'lastname', 'email'],
+                path: {
+                  wildcard: '*',
+                },
               },
             },
           },
         ]
-      : [];
+      : [
+          {
+            $match: {
+              salesrep_id: id,
+            },
+          },
+        ];
 
-    const users = await this.customerLeadProvider
+    const skip = (page - 1) * limit;
+
+    const searchPromise = this.customerLeadProvider
       .aggregate([
         ...querySearch,
-        {
-          $match: {
-            salesrep_id: id,
-            _id: { $gt: startId },
-          },
-        },
         {
           $project: userProject,
         },
@@ -59,12 +63,23 @@ export class CustomerLeadsService {
       .limit(limit > 0 ? limit : 20)
       .exec();
 
-    let newStartId: number | null;
-    if (users.length > 2) {
-      newStartId = users[limit - 1]?._id;
-    }
+    const countPromise = this.customerLeadProvider
+      .aggregate([...querySearch])
+      .count('total')
+      .exec();
 
-    return { users, next: { startId: newStartId } };
+    const [search, count] = await Promise.all([searchPromise, countPromise]);
+    const pages =
+      limit > 0 ? Math.ceil((count[0]?.total || 0) / limit) || 1 : null;
+
+    const result: Partial<PaginateResult<CustomerLead>> = {
+      docs: search,
+      hasNextPage: page < pages,
+      totalDocs: count[0]?.total || 0,
+      nextPage: page < pages ? page + 1 : null,
+    };
+
+    return result;
   }
 
   async paginate(page: number, limit: number, id?: string, search?: string) {
