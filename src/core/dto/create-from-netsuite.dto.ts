@@ -33,35 +33,47 @@ export class AddressLine {
   @Expose({ name: 'defaultshipping' })
   defaultshipping: boolean;
 
+  @IsOptional()
   @Expose({ name: 'addr1_initialvalue' })
   address: string;
 
+  @IsOptional()
   @Expose({ name: 'addr2_initialvalue' })
   address_2: string;
 
+  @IsOptional()
   @Expose({ name: 'addr3_initialvalue' })
   address_3: string;
 
+  @IsOptional()
   @Expose({ name: 'addressbookaddress_key' })
   key: string;
 
+  @IsOptional()
   @Expose({ name: 'addressee_initialvalue' })
   addresse: string;
 
+  @IsOptional()
   @Expose({ name: 'city_initialvalue' })
   city: string;
 
+  @IsOptional()
   @Expose({ name: 'country_initialvalue' })
   country: string;
 
+  @IsOptional()
+  @IsString()
   label: string;
 
+  @IsOptional()
   @Expose({ name: 'phone_initialvalue' })
   phone: string;
 
+  @IsOptional()
   @Expose({ name: 'state_initialvalue' })
   state: string;
 
+  @IsOptional()
   @Expose({ name: 'zip_initialvalue' })
   zipcode: string;
 }

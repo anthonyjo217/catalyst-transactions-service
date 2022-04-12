@@ -9,6 +9,7 @@ import {
   CustomerLead,
 } from '~core/interfaces/customer-lead.interface';
 import { NetsuiteRequest } from '~core/interfaces/netsuite-request.interface';
+import { EmployeesService } from '../employees/employees.service';
 import { CreateLeadAddressDTO } from './dto/create-address.dto';
 import { CreateLeadDTO } from './dto/create-lead.dto';
 import {
@@ -126,11 +127,21 @@ export class CustomerLeadsService {
         delete fields.email;
       }
 
+      const fullname = `${fields.firstname} ${fields.lastname}`;
+      const addresses = sublists.addressbook.map((address) => {
+        const addresse = address.addresse ? address.addresse : fullname;
+
+        return {
+          ...address,
+          addresse,
+        };
+      });
+
       const hrc: CustomerLeadHrc = { ...dto.fields };
       const customerLead: CustomerLead = {
         ...fields,
         hrc,
-        addresses: sublists.addressbook,
+        addresses,
         salesrep_id: sublists.salesteam['line 1'].employee,
         _id: fields.id,
         name: `${fields.firstname} ${fields.lastname}`,
@@ -147,6 +158,7 @@ export class CustomerLeadsService {
       }
       return { success: true };
     } catch (error) {
+      console.log(error);
       return { success: false };
     }
   }
@@ -178,6 +190,7 @@ export class CustomerLeadsService {
       );
       return { data };
     } catch (error) {
+      console.log(error.response);
       throw new Error('An error ocurred while creating lead');
     }
   }

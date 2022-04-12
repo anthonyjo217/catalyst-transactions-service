@@ -8,9 +8,7 @@ export class AddressModel extends Document implements Address {
   @Prop()
   _id: number;
 
-  @Prop({
-    required: true,
-  })
+  @Prop()
   address: string;
 
   @Prop()
@@ -19,52 +17,34 @@ export class AddressModel extends Document implements Address {
   @Prop()
   address_3?: string;
 
-  @Prop({
-    required: true,
-  })
+  @Prop()
   zipcode: string;
 
-  @Prop({
-    required: true,
-  })
+  @Prop()
   city: string;
 
-  @Prop({
-    required: true,
-  })
+  @Prop()
   state: string;
 
-  @Prop({
-    required: true,
-  })
+  @Prop()
   country: string;
 
-  @Prop({
-    required: true,
-  })
+  @Prop()
   defaultbilling: boolean;
 
-  @Prop({
-    required: true,
-  })
+  @Prop()
   defaultshipping: boolean;
 
-  @Prop({
-    required: true,
-  })
+  @Prop()
   isresidential: boolean;
 
   @Prop()
   phone: string;
 
-  @Prop({
-    required: true,
-  })
+  @Prop()
   addresse: string;
 
-  @Prop({
-    required: true,
-  })
+  @Prop()
   key: string;
 }
 
