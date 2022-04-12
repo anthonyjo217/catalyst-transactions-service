@@ -42,7 +42,7 @@ spec:
             - name: APP_MODE
               value: dev
             - name: MONGODB_HOST
-              value: 'mongodb+srv://KwVb6NrI4l2ZWWoG:FKrv956U7CKPnhv8@user-service.cpp1k.mongodb.net/users?authSource=admin&replicaSet=atlas-30lvev-shard-0&w=majority&readPreference=primary&retryWrites=true&ssl=true'
+              value: 'mongodb+srv://rEcKeyEricKBOADe:Z4bSuXHQX6Z7sZZT@user-service.cpp1k.mongodb.net/users?authSource=admin&replicaSet=atlas-30lvev-shard-0&w=majority&readPreference=primary&retryWrites=true&ssl=true'
             - name: PORT
               value: '3000'
             - name: JWT_SECRET

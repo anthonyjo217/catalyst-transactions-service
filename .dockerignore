@@ -3,6 +3,7 @@
 **/k8s
 **/node_modules
 **/.vscode
+/k8s
 .env
 .prod.env
 .dev.env
