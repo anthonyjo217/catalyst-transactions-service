@@ -59,4 +59,10 @@ export class EmployeesService {
     }
     return { success: true };
   }
+
+  async findOne(id: number) {
+    return this.employeeProvider
+      .findOne({ _id: id }, { _id: 1, firstname: 1, lastname: 1 })
+      .lean();
+  }
 }

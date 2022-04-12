@@ -25,4 +25,5 @@ export const userProject: Partial<UserProject> = {
   entitytitle: 1,
   entitynumber: 1,
   token: 1,
+  salesrep_id: 1,
 };
