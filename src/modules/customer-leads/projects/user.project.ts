@@ -1,10 +1,6 @@
 import { CustomerLead } from '~core/interfaces/customer-lead.interface';
 
-export type UserProject = {
-  [key in keyof CustomerLead]: number;
-};
-
-export const userProject: Partial<UserProject> = {
+export const userProject: MongoProject<CustomerLead> = {
   _id: 1,
   firstname: 1,
   lastname: 1,
@@ -26,4 +22,28 @@ export const userProject: Partial<UserProject> = {
   entitynumber: 1,
   token: 1,
   salesrep_id: 1,
+  nacionalidad: 1,
+  ocupacion: 1,
+  first_child_birthdate: 1,
+  first_child_name: 1,
+  second_child_birthdate: 1,
+  second_child_name: 1,
+  custentity_resultado_de_contacto_con_cli: 1,
+  companyname: 1,
+  homephone: 1,
+  dream_in_money: 1,
+  datecreated: 1,
+  phone: 1,
+  stage: 1,
+  purchase_type: 1,
+  rma_available: 1,
+  state_restriction_override: 1,
+};
+
+export type MongoProject<T> = {
+  [key in keyof T]?: T[key] extends string | number | boolean
+    ? number
+    : T[key] extends Array<infer U>
+    ? MongoProject<U> | number
+    : MongoProject<T[key]> | number;
 };
