@@ -112,6 +112,14 @@ export class AppController {
     }
   }
 
+  @IsPublic()
+  @ApiKey()
+  @UseGuards(ApiKeyGuard)
+  @Delete(':id')
+  async deleteFromNetsuite(@Param('id', new ParseIntPipe()) id: number) {
+    return this.customerLeadService.delete(id);
+  }
+
   @Get(':id/token')
   async generateToken(@Param('id', new ParseIntPipe()) id: number) {
     return this.customerLeadService.generateToken(id);

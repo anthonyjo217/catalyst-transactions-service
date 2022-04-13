@@ -8,6 +8,7 @@ import {
   CustomerLeadModel,
   CustomerLeadSchema,
 } from './models/customer-lead.model';
+import { EmployeesModule } from '../employees/employees.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import {
         collection: 'users',
       },
     ]),
+    EmployeesModule,
   ],
   controllers: [CustomerLeadsController],
   providers: [CustomerLeadsService],

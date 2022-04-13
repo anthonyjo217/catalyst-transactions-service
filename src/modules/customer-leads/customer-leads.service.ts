@@ -26,6 +26,7 @@ export class CustomerLeadsService {
     @InjectModel(CustomerLeadModel.name)
     private customerLeadProvider: PaginateModel<CustomerLeadModel>,
     private httpService: HttpService,
+    private employessService: EmployeesService,
   ) {}
 
   async findAll(id: string, page = 1, limit = 10, query?: string) {
@@ -101,13 +102,15 @@ export class CustomerLeadsService {
 
   async findOne(id: number) {
     const user = await this.customerLeadProvider
-      .findOne({ _id: id }, { refresh_token: 0, password: 0 })
+      .findOne({ _id: id }, userProject)
       .lean();
+
+    const sales_rep = await this.employessService.findOne(+user.salesrep_id);
 
     if (!user) {
       throw new NotFoundException();
     }
-    return user;
+    return { ...user, sales_rep };
   }
 
   async validateByProperty(
@@ -231,5 +234,9 @@ export class CustomerLeadsService {
     );
     const { token } = data.customer;
     return { token };
+  }
+
+  delete(id: number) {
+    return this.customerLeadProvider.deleteOne({ _id: id });
   }
 }
