@@ -105,11 +105,11 @@ export class CustomerLeadsService {
       .findOne({ _id: id }, userProject)
       .lean();
 
-    const sales_rep = await this.employessService.findOne(+user.salesrep_id);
-
     if (!user) {
       throw new NotFoundException();
     }
+
+    const sales_rep = await this.employessService.findOne(+user.salesrep_id);
     return { ...user, sales_rep };
   }
 
