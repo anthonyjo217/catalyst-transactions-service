@@ -39,6 +39,7 @@ export const userProject: MongoProject<CustomerLead> = {
   rma_available: 1,
   state_restriction_override: 1,
   leadsource: 1,
+  referred_by: 1,
 };
 
 export type MongoProject<T> = {
