@@ -146,8 +146,9 @@ export class AuthController {
     return this.authService.recoverPassword(email);
   }
 
+  @IsPublic()
   @HttpCode(200)
-  @Post('reset-password')
+  @Post('reset-password/:token')
   async resetPassword(@Body() { token, password }: RecoverPasswordDTO) {
     return this.authService.resetPassword(token, password);
   }
