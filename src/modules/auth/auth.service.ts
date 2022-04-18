@@ -91,14 +91,12 @@ export class AuthService {
       const token = crypto.randomBytes(16).toString('hex');
       const url = `${process.env.FRONTEND_URL}/reset-password/${token}`;
 
-      console.log(process.env.FRONTEND_URL);
-      console.log(process.env.MAILGUN_API_KEY);
-      console.log(process.env.MAILGUN_DOMAIN);
+      await this.employeesService.setRecoverToken(user._id, token);
 
       const mailgunClient = mailgun.client({
         username: 'api',
         key: process.env.MAILGUN_API_KEY,
-        url: 'https://api.eu.mailgun.net',
+        url: 'https://api.mailgun.net',
       });
 
       await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN, {
@@ -117,5 +115,29 @@ export class AuthService {
       console.log(error);
       return { success: false };
     }
+  }
+
+  async validateToken(token: string) {
+    const user = await this.employeesService.getByRecoverToken(token);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return {
+      success: true,
+    };
+  }
+
+  async resetPassword(token: string, password: string) {
+    const user = await this.employeesService.getByRecoverToken(token);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    await this.employeesService.setPassword(user._id, password);
+    await this.employeesService.setRecoverToken(user._id, null);
+
+    return {
+      success: true,
+    };
   }
 }

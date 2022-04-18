@@ -81,4 +81,23 @@ export class EmployeesService {
   async getByEmail(email: string) {
     return this.employeeProvider.findOne({ email }).lean();
   }
+
+  async setRecoverToken(id: number, token: string) {
+    return this.employeeProvider.updateOne(
+      { _id: id },
+      { recover_password_token: token },
+    );
+  }
+
+  async getByRecoverToken(token: string) {
+    return this.employeeProvider
+      .findOne({ recover_password_token: token })
+      .lean();
+  }
+
+  async setPassword(id: number, password: string) {
+    const salt = await brcypt.genSalt(10);
+    const hashed = await brcypt.hash(password, salt);
+    return this.employeeProvider.updateOne({ _id: id }, { password: hashed });
+  }
 }
