@@ -100,9 +100,14 @@ export class AuthService {
 
       await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN, {
         from: 'Tissini <tissini@tissini.com>',
-        to: 'jose.lopez@tissini.com',
+        to: user.email,
         subject: 'Recuperar contraseña',
-        text: `Para recuperar su contraseña, haga click en el siguiente enlace: ${url}`,
+        template: 'recover-password',
+        text: 'Recuperar contraseña',
+        'h:X-Mailgun-Variables': JSON.stringify({
+          account: user.email,
+          url,
+        }),
       });
 
       return { success: true };
