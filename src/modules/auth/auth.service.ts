@@ -1,5 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+
+import * as crypto from 'crypto';
+
+// ! MailgunJs imports
+import * as FormData from 'form-data';
+import Mailgun from 'mailgun.js';
+
+const mailgun = new Mailgun(FormData);
+
 import { USER_TYPES } from '~core/dto/create-from-netsuite.dto';
 import { User } from '~core/interfaces/user.interface';
 
@@ -70,5 +79,43 @@ export class AuthService {
   async idLogin(id: number) {
     const user = await this.customerLeadsService.validateByProperty('id', id);
     return this.getTokens(user);
+  }
+
+  async recoverPassword(email: string) {
+    try {
+      const user = await this.employeesService.getByEmail(email);
+      if (!user) {
+        throw new UnauthorizedException();
+      }
+
+      const token = crypto.randomBytes(16).toString('hex');
+      const url = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+
+      console.log(process.env.FRONTEND_URL);
+      console.log(process.env.MAILGUN_API_KEY);
+      console.log(process.env.MAILGUN_DOMAIN);
+
+      const mailgunClient = mailgun.client({
+        username: 'api',
+        key: process.env.MAILGUN_API_KEY,
+        url: 'https://api.eu.mailgun.net',
+      });
+
+      await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN, {
+        from: 'ts-no-reply@tissini.com',
+        to: 'jose.lopez@tissini.com',
+        subject: 'Recuperar contraseña',
+        text: `
+        Hola ${user.name}!
+        Para recuperar tu contraseña, haz click en el siguiente enlace:
+        ${url}
+      `,
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.log(error);
+      return { success: false };
+    }
   }
 }

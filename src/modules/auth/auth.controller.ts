@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   ParseIntPipe,
   Post,
@@ -11,6 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CookieOptions, Request, Response } from 'express';
+
 import { IsPublic } from '~core/decorators/is-public.decorator';
 
 import { CustomerLead } from '~core/interfaces/customer-lead.interface';
@@ -134,5 +136,12 @@ export class AuthController {
       .send({ success: true });
 
     req.logout();
+  }
+
+  @HttpCode(200)
+  @IsPublic()
+  @Post('recover-password/:email')
+  async recoverPassword(@Param('email') email: string) {
+    return this.authService.recoverPassword(email);
   }
 }

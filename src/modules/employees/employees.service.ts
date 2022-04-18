@@ -77,4 +77,8 @@ export class EmployeesService {
 
     return this.employeeProvider.updateOne({ _id: id }, dto);
   }
+
+  async getByEmail(email: string) {
+    return this.employeeProvider.findOne({ email }).lean();
+  }
 }
