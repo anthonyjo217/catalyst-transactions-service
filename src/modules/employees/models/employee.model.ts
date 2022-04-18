@@ -14,6 +14,9 @@ export class EmployeeModel extends UserModel implements Employee {
   id_8x8: string;
 
   @Prop()
+  recover_password_token: string;
+
+  @Prop()
   password?: string;
 }
 

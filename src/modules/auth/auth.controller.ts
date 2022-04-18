@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   ParseIntPipe,
   Post,
@@ -11,6 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CookieOptions, Request, Response } from 'express';
+
 import { IsPublic } from '~core/decorators/is-public.decorator';
 
 import { CustomerLead } from '~core/interfaces/customer-lead.interface';
@@ -19,6 +21,7 @@ import { Employee } from '~core/interfaces/employee.interface';
 import { AuthService } from './auth.service';
 import { LoginDTO } from './dto/login.dto';
 import { PhonenumberLoginDTO } from './dto/phonenumber-login.dto';
+import { RecoverPasswordDTO } from './dto/recover-password.dto';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 
 const EXP_TIME = 1000 * 60 * 60 * 24 * 365; // ! 1 year
@@ -134,5 +137,19 @@ export class AuthController {
       .send({ success: true });
 
     req.logout();
+  }
+
+  @HttpCode(200)
+  @IsPublic()
+  @Get('recover-password/:email')
+  async recoverPassword(@Param('email') email: string) {
+    return this.authService.recoverPassword(email);
+  }
+
+  @IsPublic()
+  @HttpCode(200)
+  @Post('reset-password/:token')
+  async resetPassword(@Body() { token, password }: RecoverPasswordDTO) {
+    return this.authService.resetPassword(token, password);
   }
 }
