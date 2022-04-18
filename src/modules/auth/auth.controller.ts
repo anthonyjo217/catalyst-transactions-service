@@ -147,12 +147,6 @@ export class AuthController {
   }
 
   @HttpCode(200)
-  @Get('validate-token/:token')
-  async validateToken(@Param('token') token: string) {
-    return this.authService.validateToken(token);
-  }
-
-  @HttpCode(200)
   @Post('reset-password')
   async resetPassword(@Body() { token, password }: RecoverPasswordDTO) {
     return this.authService.resetPassword(token, password);

@@ -88,43 +88,27 @@ export class AuthService {
         throw new UnauthorizedException();
       }
 
-      const token = crypto.randomBytes(16).toString('hex');
+      const token = crypto.randomBytes(64).toString('hex');
       const url = `${process.env.FRONTEND_URL}/reset-password/${token}`;
-
       await this.employeesService.setRecoverToken(user._id, token);
 
       const mailgunClient = mailgun.client({
         username: 'api',
         key: process.env.MAILGUN_API_KEY,
-        url: 'https://api.mailgun.net',
+        url: 'https://api.mailgun.net/',
       });
 
       await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN, {
-        from: 'ts-no-reply@tissini.com',
+        from: 'Tissini <tissini@tissini.com>',
         to: 'jose.lopez@tissini.com',
         subject: 'Recuperar contraseña',
-        text: `
-        Hola ${user.name}!
-        Para recuperar tu contraseña, haz click en el siguiente enlace:
-        ${url}
-      `,
+        text: `Para recuperar su contraseña, haga click en el siguiente enlace: ${url}`,
       });
 
       return { success: true };
     } catch (error) {
-      console.log(error);
       return { success: false };
     }
-  }
-
-  async validateToken(token: string) {
-    const user = await this.employeesService.getByRecoverToken(token);
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    return {
-      success: true,
-    };
   }
 
   async resetPassword(token: string, password: string) {
