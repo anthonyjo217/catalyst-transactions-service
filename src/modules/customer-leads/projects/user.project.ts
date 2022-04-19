@@ -42,6 +42,11 @@ export const userProject: MongoProject<CustomerLead> = {
   referred_by: 1,
   catalyst_inboxsms_load: 1,
   catalyst_phonecall_load: 1,
+  metas_hace_dos_meses: 1,
+  metas_hace_tres_meses: 1,
+  metas_mes_actual: 1,
+  meses_total_acumulado: 1,
+  metas_mes_anterior: 1,
 };
 
 export type MongoProject<T> = {
