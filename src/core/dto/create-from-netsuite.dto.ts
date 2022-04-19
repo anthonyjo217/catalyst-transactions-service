@@ -777,7 +777,7 @@ export class Fields extends EmployeeFields {
   @IsOptional()
   @Transform(({ obj }) => obj['custentity_catalyst_phonecall_load'] === 'T')
   @Expose({ name: 'custentity_catalyst_phonecall_load' })
-  custentity_catalyst_phonecall_load: boolean;
+  catalyst_phonecall_load: boolean;
 }
 
 export class CreateFromNetsuiteDTO {

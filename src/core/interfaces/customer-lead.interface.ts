@@ -121,7 +121,7 @@ export interface CustomerLead extends User {
   first_child_birthdate: string;
   second_child_birthdate: string;
   catalyst_inboxsms_load: boolean;
-  custentity_catalyst_phonecall_load: boolean;
+  catalyst_phonecall_load: boolean;
 }
 
 export interface CustomerLeadHrc {

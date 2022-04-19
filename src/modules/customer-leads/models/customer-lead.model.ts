@@ -19,7 +19,7 @@ export class CustomerLeadModel extends UserModel implements CustomerLead {
   catalyst_inboxsms_load: boolean;
 
   @Prop()
-  custentity_catalyst_phonecall_load: boolean;
+  catalyst_phonecall_load: boolean;
 
   @Prop()
   purchase_type: number;
