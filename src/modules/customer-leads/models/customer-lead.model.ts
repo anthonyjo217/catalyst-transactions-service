@@ -16,6 +16,12 @@ import { CustomerLeadHrcSchema } from './customer-lead-hrc.model';
 })
 export class CustomerLeadModel extends UserModel implements CustomerLead {
   @Prop()
+  catalyst_inboxsms_load: boolean;
+
+  @Prop()
+  catalyst_phonecall_load: boolean;
+
+  @Prop()
   purchase_type: number;
 
   @Prop()

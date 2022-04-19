@@ -1,5 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+
+import * as crypto from 'crypto';
+
+// ! MailgunJs imports
+import * as FormData from 'form-data';
+import Mailgun from 'mailgun.js';
+
+const mailgun = new Mailgun(FormData);
+
 import { USER_TYPES } from '~core/dto/create-from-netsuite.dto';
 import { User } from '~core/interfaces/user.interface';
 
@@ -70,5 +79,51 @@ export class AuthService {
   async idLogin(id: number) {
     const user = await this.customerLeadsService.validateByProperty('id', id);
     return this.getTokens(user);
+  }
+
+  async recoverPassword(email: string) {
+    try {
+      const user = await this.employeesService.getByEmail(email);
+
+      const token = crypto.randomBytes(64).toString('hex');
+      const url = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+      await this.employeesService.setRecoverToken(user._id, token);
+
+      const mailgunClient = mailgun.client({
+        username: 'api',
+        key: process.env.MAILGUN_API_KEY,
+        url: 'https://api.mailgun.net/',
+      });
+
+      await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN, {
+        from: 'TISSINI SELLER <no-responder@notificaciones.tissini.cloud>',
+        to: user.email,
+        subject: 'Recuperación de contraseña',
+        template: 'recover-password',
+        text: 'Recuperar contraseña',
+        'h:X-Mailgun-Variables': JSON.stringify({
+          account: user.email,
+          url,
+        }),
+      });
+
+      return { success: true };
+    } catch (error) {
+      return { success: false };
+    }
+  }
+
+  async resetPassword(token: string, password: string) {
+    const user = await this.employeesService.getByRecoverToken(token);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    await this.employeesService.setPassword(user._id, password);
+    await this.employeesService.setRecoverToken(user._id, null);
+
+    return {
+      success: true,
+    };
   }
 }

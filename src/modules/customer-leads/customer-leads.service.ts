@@ -110,7 +110,13 @@ export class CustomerLeadsService {
     }
 
     const sales_rep = await this.employessService.findOne(+user.salesrep_id);
-    return { ...user, sales_rep };
+    const referrer = await this.customerLeadProvider.findOne(
+      {
+        _id: +user.referred_by,
+      },
+      { _id: 1, firstname: 1, lastname: 1 },
+    );
+    return { ...user, sales_rep, referrer };
   }
 
   async validateByProperty(

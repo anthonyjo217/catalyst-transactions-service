@@ -7,6 +7,7 @@ import { Fields } from '~core/dto/create-from-netsuite.dto';
 
 import { EmployeeModel } from './models/employee.model';
 import { Employee } from '~core/interfaces/employee.interface';
+import { UpdateEmployeeDTO } from './dto/update-employee.dto';
 
 @Injectable()
 export class EmployeesService {
@@ -64,5 +65,39 @@ export class EmployeesService {
     return this.employeeProvider
       .findOne({ _id: id }, { _id: 1, firstname: 1, lastname: 1 })
       .lean();
+  }
+
+  async update(id: number, dto: UpdateEmployeeDTO) {
+    if (dto.password) {
+      const salt = await brcypt.genSalt(10);
+      const hashed = await brcypt.hash(dto.password, salt);
+      dto.password = hashed;
+      return this.employeeProvider.updateOne({ _id: id }, dto);
+    }
+
+    return this.employeeProvider.updateOne({ _id: id }, dto);
+  }
+
+  async getByEmail(email: string) {
+    return this.employeeProvider.findOne({ email }).lean();
+  }
+
+  async setRecoverToken(id: number, token: string) {
+    return this.employeeProvider.updateOne(
+      { _id: id },
+      { recover_password_token: token },
+    );
+  }
+
+  async getByRecoverToken(token: string) {
+    return this.employeeProvider
+      .findOne({ recover_password_token: token })
+      .lean();
+  }
+
+  async setPassword(id: number, password: string) {
+    const salt = await brcypt.genSalt(10);
+    const hashed = await brcypt.hash(password, salt);
+    return this.employeeProvider.updateOne({ _id: id }, { password: hashed });
   }
 }
