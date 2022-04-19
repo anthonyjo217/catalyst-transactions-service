@@ -84,9 +84,6 @@ export class AuthService {
   async recoverPassword(email: string) {
     try {
       const user = await this.employeesService.getByEmail(email);
-      if (!user) {
-        throw new UnauthorizedException();
-      }
 
       const token = crypto.randomBytes(64).toString('hex');
       const url = `${process.env.FRONTEND_URL}/reset-password/${token}`;
@@ -99,9 +96,9 @@ export class AuthService {
       });
 
       await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN, {
-        from: 'Tissini <tissini@tissini.com>',
+        from: 'TISSINI SELLER <no-responder@notificaciones.tissini.cloud>',
         to: user.email,
-        subject: 'Recuperar contraseña',
+        subject: 'Recuperación de contraseña',
         template: 'recover-password',
         text: 'Recuperar contraseña',
         'h:X-Mailgun-Variables': JSON.stringify({
