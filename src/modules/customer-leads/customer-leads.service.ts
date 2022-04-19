@@ -109,13 +109,22 @@ export class CustomerLeadsService {
       throw new NotFoundException();
     }
 
-    const sales_rep = await this.employessService.findOne(+user.salesrep_id);
-    const referrer = await this.customerLeadProvider.findOne(
-      {
-        _id: +user.referred_by,
-      },
-      { _id: 1, firstname: 1, lastname: 1 },
-    );
+    let sales_rep = null;
+    let referrer = null;
+
+    if (user.salesrep_id) {
+      sales_rep = await this.employessService.findOne(+user.salesrep_id);
+    }
+
+    if (user.referred_by) {
+      referrer = await this.customerLeadProvider.findOne(
+        {
+          _id: +user.referred_by,
+        },
+        { _id: 1, firstname: 1, lastname: 1 },
+      );
+    }
+
     return { ...user, sales_rep, referrer };
   }
 
