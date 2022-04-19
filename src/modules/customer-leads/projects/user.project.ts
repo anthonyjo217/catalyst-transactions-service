@@ -40,6 +40,8 @@ export const userProject: MongoProject<CustomerLead> = {
   state_restriction_override: 1,
   leadsource: 1,
   referred_by: 1,
+  catalyst_inboxsms_load: 1,
+  catalyst_phonecall_load: 1,
 };
 
 export type MongoProject<T> = {
