@@ -768,6 +768,16 @@ export class Fields extends EmployeeFields {
   @IsString()
   @Expose({ name: 'custentity8' })
   second_child_birthdate: string;
+
+  @IsOptional()
+  @Transform(({ obj }) => obj['custentity_catalyst_inboxsms_load'] === 'T')
+  @Expose({ name: 'custentity_catalyst_inboxsms_load' })
+  catalyst_inboxsms_load: boolean;
+
+  @IsOptional()
+  @Transform(({ obj }) => obj['custentity_catalyst_phonecall_load'] === 'T')
+  @Expose({ name: 'custentity_catalyst_phonecall_load' })
+  custentity_catalyst_phonecall_load: boolean;
 }
 
 export class CreateFromNetsuiteDTO {
