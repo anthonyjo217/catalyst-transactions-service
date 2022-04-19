@@ -8,6 +8,7 @@ import { EmployeesModule } from './modules/employees/employees.module';
 import { CustomerLeadsModule } from './modules/customer-leads/customer-leads.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CoreModule } from './core/core.module';
+import { EmailModule } from './modules/email/email.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -19,6 +20,7 @@ import { CoreModule } from './core/core.module';
     CustomerLeadsModule,
     AuthModule,
     CoreModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

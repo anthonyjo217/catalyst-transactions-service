@@ -59,6 +59,7 @@ export class AppController {
     );
   }
 
+  @IsPublic()
   @Get(':id')
   async getUser(@Param('id', new ParseIntPipe()) id: number) {
     return this.customerLeadService.findOne(id);
