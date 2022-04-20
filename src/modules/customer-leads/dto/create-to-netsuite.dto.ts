@@ -23,7 +23,7 @@ export interface CreateToNetsuiteDTO {
   custentity_resultado_de_contacto_con_cli: string;
   custentity6: string;
   custentity8: string;
-
+  custentity_ship_to_walgreens: boolean;
   addresses: AddressDTO[];
 }
 
