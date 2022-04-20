@@ -97,7 +97,7 @@ export class AuthService {
 
       await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN, {
         from: 'TISSINI SELLER <no-responder@notificaciones.tissini.cloud>',
-        to: 'jose.lopez@tissini.com',
+        to: user.email,
         subject: 'Recuperación de contraseña',
         template: 'recover-password',
         text: 'Recuperar contraseña',
