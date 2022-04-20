@@ -4,16 +4,20 @@ import { Model } from 'mongoose';
 import * as brcypt from 'bcrypt';
 
 import { Fields } from '~core/dto/create-from-netsuite.dto';
+import { Employee } from '~core/interfaces/employee.interface';
 
 import { EmployeeModel } from './models/employee.model';
-import { Employee } from '~core/interfaces/employee.interface';
+import { EmailOptions } from '../email/interfaces/email-options.interface';
 import { UpdateEmployeeDTO } from './dto/update-employee.dto';
+import generatePasswordUrl from '../../helpers/generate-password-url';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class EmployeesService {
   constructor(
     @InjectModel(EmployeeModel.name)
     private employeeProvider: Model<EmployeeModel>,
+    private emailService: EmailService,
   ) {}
 
   async validate(email: string, password: string) {
@@ -24,7 +28,9 @@ export class EmployeesService {
     }
 
     const { password: hashed, ...rest } = employee;
-    const isValid = await brcypt.compare(password, hashed);
+    const isValid =
+      password.length > 0 && (await brcypt.compare(password, hashed));
+
     if (!isValid) {
       return null;
     }
@@ -53,10 +59,26 @@ export class EmployeesService {
         { $set: employee },
       );
     } else {
-      const password = 'HsuFO5Z5Jn';
-      const salt = await brcypt.genSalt(10);
-      const hashed = await brcypt.hash(password, salt);
-      await this.employeeProvider.create({ ...employee, password: hashed });
+      const params = {
+        createPassword: true,
+      };
+      const { url, token } = generatePasswordUrl(params);
+      const options: EmailOptions = {
+        subject: 'Bienvenido a Tissini Seller',
+        text: '',
+        to: employee.email,
+        template: 'create-password',
+        variables: {
+          url,
+        },
+      };
+
+      this.emailService.sendEmail(options);
+      await this.employeeProvider.create({
+        ...employee,
+        password: '',
+        recover_password_token: token,
+      });
     }
     return { success: true };
   }
