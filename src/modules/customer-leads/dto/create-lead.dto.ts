@@ -179,6 +179,11 @@ export class CreateLeadDTO {
   @IsString()
   @Expose({ name: 'second_child_birthdate' })
   custentity8: string;
+
+  @IsOptional()
+  @IsBoolean()
+  @Expose({ name: 'ship_to_walgreens' })
+  custentity_ship_to_walgreens: boolean;
 }
 
 export class CreateAddressDTO {
