@@ -65,8 +65,9 @@ export class EmployeesService {
       const url = generatePasswordUrl(params);
       const options: EmailOptions = {
         subject: 'Bienvenido a Tissini Seller',
-        text: `Hola ${employee.firstname} ${employee.lastname}, gracias por registrarte en Tissini Seller.`,
+        text: '',
         to: employee.email,
+        template: 'create-password',
         variables: {
           url,
         },

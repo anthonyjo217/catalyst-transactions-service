@@ -15,7 +15,7 @@ import { EmailModule } from './modules/email/email.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    MongooseModule.forRoot(process.env.MONGODB_HOST),
+    MongooseModule.forRoot('mongodb://localhost/nest-crm'),
     EmployeesModule,
     CustomerLeadsModule,
     AuthModule,
