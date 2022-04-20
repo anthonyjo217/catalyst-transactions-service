@@ -62,7 +62,7 @@ export class EmployeesService {
       const params = {
         createPassword: true,
       };
-      const url = generatePasswordUrl(params);
+      const { url, token } = generatePasswordUrl(params);
       const options: EmailOptions = {
         subject: 'Bienvenido a Tissini Seller',
         text: '',
@@ -74,7 +74,11 @@ export class EmployeesService {
       };
 
       this.emailService.sendEmail(options);
-      await this.employeeProvider.create({ ...employee, password: '' });
+      await this.employeeProvider.create({
+        ...employee,
+        password: '',
+        recover_password_token: token,
+      });
     }
     return { success: true };
   }

@@ -9,5 +9,8 @@ export default function generatePasswordUrl(params?: Params) {
   );
 
   const token = crypto.randomBytes(64).toString('hex');
-  return `${process.env.FRONTEND_URL}/reset-password/${token}?${stringifiedParams}`;
+  return {
+    url: `${process.env.FRONTEND_URL}/reset-password/${token}?${stringifiedParams}`,
+    token,
+  };
 }
