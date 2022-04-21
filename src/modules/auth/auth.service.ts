@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
@@ -22,6 +23,7 @@ export class AuthService {
     private jwtService: JwtService,
     private employeesService: EmployeesService,
     private customerLeadsService: CustomerLeadsService,
+    private httpService: HttpService,
   ) {}
 
   validateUser({ password, username }: LoginDTO) {
@@ -56,8 +58,20 @@ export class AuthService {
 
   async login({ password, username }: LoginDTO) {
     const user = await this.employeesService.validate(username, password);
+    if (!user.is_logged_in) {
+      await this.employeesService.setIsLoggedIn(user._id, true);
+    } else {
+      this.httpService.post(process.env.NOTIFICATION_URL, {
+        type: 'LOGOUT',
+        user: user._id,
+      });
+    }
     const tokens = await this.getTokens(user);
     return { user, ...tokens };
+  }
+
+  async logout(id: number) {
+    return await this.employeesService.setIsLoggedIn(id, false);
   }
 
   async phoneLogin(mobilephone: string) {

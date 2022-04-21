@@ -37,6 +37,13 @@ export class EmployeesService {
     return rest;
   }
 
+  async setIsLoggedIn(id: number, isLoggedIn: boolean) {
+    return this.employeeProvider.updateOne(
+      { _id: id },
+      { is_logged_in: isLoggedIn },
+    );
+  }
+
   async setRefreshToken(id: number, token: string | null) {
     return this.employeeProvider.updateOne(
       { _id: id },
