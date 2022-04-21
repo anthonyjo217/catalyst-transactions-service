@@ -3,13 +3,16 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginateModel, PaginateResult } from 'mongoose';
 import { firstValueFrom } from 'rxjs';
+
 import { CreateFromNetsuiteDTO } from '~core/dto/create-from-netsuite.dto';
 import {
   CustomerLeadHrc,
   CustomerLead,
 } from '~core/interfaces/customer-lead.interface';
 import { NetsuiteRequest } from '~core/interfaces/netsuite-request.interface';
+
 import { EmployeesService } from '../employees/employees.service';
+
 import { CreateLeadAddressDTO } from './dto/create-address.dto';
 import { CreateLeadDTO } from './dto/create-lead.dto';
 import {
@@ -109,6 +112,11 @@ export class CustomerLeadsService {
       throw new NotFoundException();
     }
 
+    const { addresses } = user;
+    const orderedAddresses = addresses.sort((a) => {
+      return a.defaultshipping ? -1 : 1;
+    });
+
     let sales_rep = null;
     let referrer = null;
 
@@ -121,11 +129,11 @@ export class CustomerLeadsService {
         {
           _id: +user.referred_by,
         },
-        { _id: 1, firstname: 1, lastname: 1 },
+        { _id: 1, firstname: 1, lastname: 1, entitynumber: 1 },
       );
     }
 
-    return { ...user, sales_rep, referrer };
+    return { ...user, addresses: orderedAddresses, sales_rep, referrer };
   }
 
   async validateByProperty(
