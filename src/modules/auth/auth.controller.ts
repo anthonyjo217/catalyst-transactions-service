@@ -130,7 +130,9 @@ export class AuthController {
   }
 
   @Delete('logout')
-  async logout(@Req() req: Request, @Res() res: Response) {
+  async logout(@Req() req, @Res() res: Response) {
+    await this.authService.logout(req.user._id);
+
     res
       .clearCookie('access_token', COOKIES_OPTIONS)
       .clearCookie('refresh_token', COOKIES_OPTIONS)

@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
@@ -6,6 +7,7 @@ import * as crypto from 'crypto';
 // ! MailgunJs imports
 import * as FormData from 'form-data';
 import Mailgun from 'mailgun.js';
+import { firstValueFrom } from 'rxjs';
 
 const mailgun = new Mailgun(FormData);
 
@@ -22,6 +24,7 @@ export class AuthService {
     private jwtService: JwtService,
     private employeesService: EmployeesService,
     private customerLeadsService: CustomerLeadsService,
+    private httpService: HttpService,
   ) {}
 
   validateUser({ password, username }: LoginDTO) {
@@ -56,8 +59,24 @@ export class AuthService {
 
   async login({ password, username }: LoginDTO) {
     const user = await this.employeesService.validate(username, password);
+
     const tokens = await this.getTokens(user);
+
+    if (!user.is_logged_in) {
+      await this.employeesService.setIsLoggedIn(user._id, true);
+    } else {
+      firstValueFrom(
+        this.httpService.post(
+          `${process.env.NOTIFICATION_SERVICE}/auth/logout/${user._id}`,
+        ),
+      );
+    }
+
     return { user, ...tokens };
+  }
+
+  async logout(id: number) {
+    return await this.employeesService.setIsLoggedIn(id, false);
   }
 
   async phoneLogin(mobilephone: string) {
