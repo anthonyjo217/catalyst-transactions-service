@@ -67,7 +67,7 @@ export class AuthService {
     } else {
       firstValueFrom(
         this.httpService.post(
-          `${process.env.NOTIFICATION_SERVICE}/auth/logout/${user._id}`,
+          `${process.env.NOTIFICATION_SERVICE}/v1/auth/logout/${user._id}`,
         ),
       );
     }
