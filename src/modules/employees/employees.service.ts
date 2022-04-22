@@ -28,8 +28,9 @@ export class EmployeesService {
     }
 
     const { password: hashed, ...rest } = employee;
-    const isValid =
-      password.length > 0 && (await brcypt.compare(password, hashed));
+    const isValid = await brcypt.compare(password, hashed);
+
+    console.log(password.length);
 
     if (!isValid) {
       return null;

@@ -7,6 +7,7 @@ import * as crypto from 'crypto';
 // ! MailgunJs imports
 import * as FormData from 'form-data';
 import Mailgun from 'mailgun.js';
+import { firstValueFrom } from 'rxjs';
 
 const mailgun = new Mailgun(FormData);
 
@@ -58,15 +59,19 @@ export class AuthService {
 
   async login({ password, username }: LoginDTO) {
     const user = await this.employeesService.validate(username, password);
+
+    const tokens = await this.getTokens(user);
+
     if (!user.is_logged_in) {
       await this.employeesService.setIsLoggedIn(user._id, true);
     } else {
-      this.httpService.post(process.env.NOTIFICATION_URL, {
-        type: 'LOGOUT',
-        user: user._id,
-      });
+      firstValueFrom(
+        this.httpService.post(
+          `${process.env.NOTIFICATION_SERVICE}/auth/logout/${user._id}`,
+        ),
+      );
     }
-    const tokens = await this.getTokens(user);
+
     return { user, ...tokens };
   }
 
