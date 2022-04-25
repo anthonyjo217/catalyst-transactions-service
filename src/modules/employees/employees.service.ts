@@ -28,13 +28,21 @@ export class EmployeesService {
     }
 
     const { password: hashed, ...rest } = employee;
-    const isValid =
-      password.length > 0 && (await brcypt.compare(password, hashed));
+    const isValid = await brcypt.compare(password, hashed);
+
+    console.log(password.length);
 
     if (!isValid) {
       return null;
     }
     return rest;
+  }
+
+  async setIsLoggedIn(id: number, isLoggedIn: boolean) {
+    return this.employeeProvider.updateOne(
+      { _id: id },
+      { is_logged_in: isLoggedIn },
+    );
   }
 
   async setRefreshToken(id: number, token: string | null) {

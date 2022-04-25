@@ -18,6 +18,11 @@ export class EmployeeModel extends UserModel implements Employee {
 
   @Prop()
   password?: string;
+
+  @Prop({
+    default: false,
+  })
+  is_logged_in: boolean;
 }
 
 export const EmployeeSchema = SchemaFactory.createForClass(EmployeeModel);
