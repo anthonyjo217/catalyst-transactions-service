@@ -48,6 +48,7 @@ export const userProject: MongoProject<CustomerLead> = {
   meses_total_acumulado: 1,
   metas_mes_anterior: 1,
   ship_to_walgreens: 1,
+  balance: 1,
 };
 
 export type MongoProject<T> = {
