@@ -108,8 +108,11 @@ export class EmployeesService {
     return this.employeeProvider.updateOne({ _id: id }, dto);
   }
 
-  async getByEmail(email: string) {
-    return this.employeeProvider.findOne({ email }).lean();
+  async getByEmail(email: string, isCheck = false) {
+    const project = isCheck
+      ? { email: 1, firstname: 1, lastname: 1, _id: 0 }
+      : {};
+    return this.employeeProvider.findOne({ email }, project).lean();
   }
 
   async setRecoverToken(id: number, token: string) {

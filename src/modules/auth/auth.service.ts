@@ -145,4 +145,12 @@ export class AuthService {
       success: true,
     };
   }
+
+  async checkEmail(email: string) {
+    const user = await this.employeesService.getByEmail(email, true);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return { user };
+  }
 }

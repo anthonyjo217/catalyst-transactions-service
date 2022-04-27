@@ -154,4 +154,10 @@ export class AuthController {
   async resetPassword(@Body() { token, password }: RecoverPasswordDTO) {
     return this.authService.resetPassword(token, password);
   }
+
+  @IsPublic()
+  @Get('check-email/:email')
+  async checkEmail(@Param('email') email: string) {
+    return this.authService.checkEmail(email);
+  }
 }
