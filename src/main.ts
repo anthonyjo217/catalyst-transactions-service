@@ -12,7 +12,10 @@ async function bootstrap() {
     origin: [
       'https://ts.tissini.build',
       'https://ts.tissini.cloud',
+      'https://seller.tissini.build',
+      'https://seller.tissini.cloud',
       'http://localhost:3000',
+      'http://localhost:8080',
     ], // TODO pass to env
   });
   const port = process.env.PORT || 3030;
