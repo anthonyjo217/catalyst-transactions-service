@@ -58,12 +58,17 @@ export class CustomerLeadsService {
     const skip = (page - 1) * limit;
 
     const searchPromise = this.customerLeadProvider
-      .aggregate([
-        ...querySearch,
+      .aggregate(
+        [
+          ...querySearch,
+          {
+            $project: userProject,
+          },
+        ],
         {
-          $project: userProject,
+          maxTimeMS: 10000,
         },
-      ])
+      )
       .skip(skip)
       .limit(limit > 0 ? limit : 20)
       .exec();
@@ -261,5 +266,18 @@ export class CustomerLeadsService {
 
   delete(id: number) {
     return this.customerLeadProvider.deleteOne({ _id: id });
+  }
+
+  async getAddresses(id: number) {
+    const customer = await this.customerLeadProvider.findOne(
+      { _id: id },
+      { addresses: 1 },
+    );
+
+    if (!customer) {
+      throw new NotFoundException();
+    }
+
+    return customer.addresses;
   }
 }

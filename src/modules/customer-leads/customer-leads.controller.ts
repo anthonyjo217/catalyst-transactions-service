@@ -1,11 +1,28 @@
-import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+
+import { ApiKey } from '~core/decorators/api-key.decorator';
+import { IsPublic } from '~core/decorators/is-public.decorator';
 import { CreateFromNetsuiteDTO } from '~core/dto/create-from-netsuite.dto';
 import { PaginationParams } from '~core/interfaces/pagination-params.interface';
+
+import { ApiKeyGuard } from '../auth/guards/api-key.guard';
 import { CustomerLeadsService } from './customer-leads.service';
 import { CreateLeadAddressDTO } from './dto/create-address.dto';
 import { CreateLeadDTO } from './dto/create-lead.dto';
 
-@Controller('customer-leads')
+@Controller({
+  path: 'customer-leads',
+  version: '1',
+})
 export class CustomerLeadsController {
   constructor(private readonly customerLeadsService: CustomerLeadsService) {}
 
@@ -24,6 +41,14 @@ export class CustomerLeadsController {
   @Get(':id')
   async getUser(@Param('id') id: string) {
     return this.customerLeadsService.findOne(+id);
+  }
+
+  @IsPublic()
+  @ApiKey()
+  @UseGuards(ApiKeyGuard)
+  @Get(':id/addresses')
+  async getAddresses(@Param('id') id: string) {
+    return this.customerLeadsService.getAddresses(+id);
   }
 
   @Post()
