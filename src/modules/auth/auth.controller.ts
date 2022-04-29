@@ -39,6 +39,16 @@ export const COOKIES_OPTIONS: CookieOptions = {
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  /**
+   * Esta función setea las cookies de acceso y refresco de token y el usuario que está logueado.
+   *
+   *
+   * @param response Response Esta variable es la que se utiliza para enviar la respuesta al cliente.
+   * @param request Request Esta variable es la que se utiliza para obtener información del cliente.
+   * @param access_token string Token de acceso
+   * @param refresh_token string Token de refresco
+   * @param user Employee Objeto del usuario
+   */
   private sendCookiesResponse(
     response: Response,
     request: Request,
@@ -61,6 +71,9 @@ export class AuthController {
       .send({ success: true, access_token, refresh_token, user });
   }
 
+  /**
+   * Esta funcion loguea a un asesor
+   */
   @IsPublic()
   @Post('login')
   async login(
@@ -75,6 +88,14 @@ export class AuthController {
     this.sendCookiesResponse(res, req, access_token, refresh_token, user);
   }
 
+  /**
+   * Esta funcion es para usar en TApp v2 y loguea a las emprendedoras por medio
+   * de su numero de telefono
+   *
+   * @param res Response
+   * @param req Request
+   * @param param2 string
+   */
   @IsPublic()
   @Post('phonenumber-login')
   async phoneLogin(
@@ -89,6 +110,14 @@ export class AuthController {
     this.sendCookiesResponse(res, req, access_token, refresh_token);
   }
 
+  /**
+   * Esta funcion es para usar en TApp v2 y loguea a las emprendedoras por medio
+   * de su token
+   *
+   * @param res Response
+   * @param req Request
+   * @param param2 string
+   */
   @IsPublic()
   @Post('token-login')
   async tokenLogin(
@@ -103,6 +132,14 @@ export class AuthController {
     this.sendCookiesResponse(res, req, access_token, refresh_token);
   }
 
+  /**
+   * Esta funcion es para usar en TApp v2 y loguea a las emprendedoras por medio
+   * de su id
+   *
+   * @param res Response
+   * @param req Request
+   * @param id number
+   */
   @IsPublic()
   @Post(':id')
   async idLogin(
@@ -115,6 +152,12 @@ export class AuthController {
     this.sendCookiesResponse(res, req, access_token, refresh_token);
   }
 
+  /**
+   * Esta funcion es para refrescar el token de acceso, pero no está implementada
+   *
+   * @param req Request
+   * @returns any
+   */
   @IsPublic()
   @UseGuards(JwtRefreshGuard)
   @Get('refresh-token')
@@ -129,6 +172,13 @@ export class AuthController {
     };
   }
 
+  /**
+   * Esta funcion es para cerra la sesión de un usuario, borrando las cookies de acceso y refresco de token
+   *
+   *
+   * @param req Request
+   * @param res Response
+   */
   @Delete('logout')
   async logout(@Req() req, @Res() res: Response) {
     await this.authService.logout(req.user._id);
@@ -141,6 +191,12 @@ export class AuthController {
     req.logout();
   }
 
+  /**
+   * Esta funcion es para recuperar la contraseña de un usuario, enviando un correo con un link para cambiarla
+   *
+   * @param email string
+   * @returns Promise<any>
+   */
   @HttpCode(200)
   @IsPublic()
   @Get('recover-password/:email')
@@ -148,6 +204,10 @@ export class AuthController {
     return this.authService.recoverPassword(email);
   }
 
+  /**
+   * Esta funcion es para cambiar la contraseña de un usuario, recibiendo el token y la nueva contraseña
+   * @returns
+   */
   @IsPublic()
   @HttpCode(200)
   @Post('reset-password/:token')
