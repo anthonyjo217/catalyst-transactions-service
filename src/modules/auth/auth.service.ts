@@ -27,10 +27,19 @@ export class AuthService {
     private httpService: HttpService,
   ) {}
 
+  /**
+   * Valida la existencia de un usuario en la base de datos
+   * @returns {Promise<Employee>} user
+   */
   validateUser({ password, username }: LoginDTO) {
     return this.employeesService.validate(username, password);
   }
 
+  /**
+   * Obtiene los tokens de un usuario
+   * @param user User
+   * @returns {Promise<{accessToken: string, refreshToken: string}>}
+   */
   async getTokens(user: User) {
     const { JWT_SECRET, JWT_REFRESH_SECRET } = process.env;
     const access_token = this.jwtService.sign({ user }, { secret: JWT_SECRET });
@@ -53,18 +62,30 @@ export class AuthService {
     return { access_token, refresh_token };
   }
 
+  /**
+   * Genera un token de acceso
+   * @param user User
+   * @returns {string} token
+   */
   getAccessToken(user: User) {
     return this.jwtService.sign({ user }, { secret: process.env.JWT_SECRET });
   }
 
+  /**
+   * Loguea un usuario
+   */
   async login({ password, username }: LoginDTO) {
     const user = await this.employeesService.validate(username, password);
 
     const tokens = await this.getTokens(user);
 
+    // Se valida que el usuario este logueado
+    // Si no está se actualiza el usuario en la base de datos
     if (!user.is_logged_in) {
       await this.employeesService.setIsLoggedIn(user._id, true);
     } else {
+      // Si el usuario está logueado, se manda una notificación que cierra
+      // cualquier sesión abierta
       firstValueFrom(
         this.httpService.post(
           `${process.env.NOTIFICATION_SERVICE}/v1/auth/logout/${user._id}`,
@@ -75,6 +96,10 @@ export class AuthService {
     return { user, ...tokens };
   }
 
+  /**
+   * Actualiza el estado de un usuario
+   * @param id number - id del usuario
+   */
   async logout(id: number) {
     return await this.employeesService.setIsLoggedIn(id, false);
   }
@@ -100,10 +125,17 @@ export class AuthService {
     return this.getTokens(user);
   }
 
+  /**
+   * Envia un correo de recuperación de contraseña
+   *
+   * @param email string
+   * @returns {Promise<{success: boolean}>}
+   */
   async recoverPassword(email: string) {
     try {
       const user = await this.employeesService.getByEmail(email);
 
+      // Se crea un token para recuperar la contraseña y se guarda en la base de datos
       const token = crypto.randomBytes(64).toString('hex');
       const url = `${process.env.FRONTEND_URL}/reset-password/${token}`;
       await this.employeesService.setRecoverToken(user._id, token);
@@ -114,6 +146,7 @@ export class AuthService {
         url: 'https://api.mailgun.net/',
       });
 
+      // Se envia el correo
       await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN, {
         from: 'TISSINI SELLER <no-responder@notificaciones.tissini.cloud>',
         to: user.email,
@@ -132,12 +165,20 @@ export class AuthService {
     }
   }
 
+  /**
+   * Actualiza la contraseña de un usuario
+   * @param token string
+   * @param password string
+   * @returns {Promise<{success: boolean}>}
+   */
   async resetPassword(token: string, password: string) {
+    // Se obtiene el usuario de la base de datos
     const user = await this.employeesService.getByRecoverToken(token);
     if (!user) {
       throw new UnauthorizedException();
     }
 
+    // Se actualiza la contraseña y se elimina el token
     await this.employeesService.setPassword(user._id, password);
     await this.employeesService.setRecoverToken(user._id, null);
 

@@ -10,6 +10,8 @@ import {
   IsNumberString,
 } from 'class-validator';
 
+// Estos son los dtos que se usan para crear o actualizar una dirección desde el frontend
+
 export class CreateAddressDTO {
   @IsString()
   @IsNotEmpty()

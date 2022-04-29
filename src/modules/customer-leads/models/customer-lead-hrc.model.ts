@@ -2,6 +2,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { CustomerLeadHrc } from '~core/interfaces/customer-lead.interface';
 
+// Este schema representa la estructura de los campos de tissini plus para un lead
+
 @Schema()
 export class CustomerLeadHrcModel implements CustomerLeadHrc {
   @Prop()

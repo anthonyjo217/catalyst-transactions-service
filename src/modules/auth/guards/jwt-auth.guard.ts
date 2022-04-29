@@ -11,6 +11,13 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     super();
   }
 
+  /**
+   * Esta función se ejecuta antes de que el controlador se ejecute y se valida si el endpoint es público o no.
+   *
+   * @param context
+   *
+   * @returns {Observable<any>}
+   */
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {

@@ -20,6 +20,12 @@ export class EmployeesService {
     private emailService: EmailService,
   ) {}
 
+  /**
+   * Gets an employee by its email and validate the password
+   *
+   * @param email The email of the employee
+   * @param password The password of the employee
+   */
   async validate(email: string, password: string) {
     const employee = await this.employeeProvider.findOne({ email }).lean();
 
@@ -30,14 +36,18 @@ export class EmployeesService {
     const { password: hashed, ...rest } = employee;
     const isValid = await brcypt.compare(password, hashed);
 
-    console.log(password.length);
-
     if (!isValid) {
       return null;
     }
     return rest;
   }
 
+  /**
+   * Setea si el usuario esta activo o no
+   *
+   * @param id The id of the employee
+   * @param isLoggedIn The flag that indicates if the employee is logged in
+   */
   async setIsLoggedIn(id: number, isLoggedIn: boolean) {
     return this.employeeProvider.updateOne(
       { _id: id },
@@ -52,6 +62,11 @@ export class EmployeesService {
     );
   }
 
+  /**
+   * Crea un asesor desde netsuite
+   *
+   * @param info The info of the employee
+   */
   async create(info: Fields) {
     const employee: Employee = {
       ...info,
@@ -60,13 +75,16 @@ export class EmployeesService {
       stage: 'EMPLOYEE',
     };
 
+    // Se valida si el usuario ya existe
     const exists = await this.employeeProvider.exists({ _id: employee._id });
     if (exists) {
+      // Si existe se actualiza
       await this.employeeProvider.updateOne(
         { _id: employee._id },
         { $set: employee },
       );
     } else {
+      // Si no existe se crea y se envia un correo para que cambie la contraseña
       const params = {
         createPassword: true,
       };
@@ -97,8 +115,14 @@ export class EmployeesService {
       .lean();
   }
 
+  /**
+   *
+   * @param id The id of the employee
+   * @param dto The data to update
+   */
   async update(id: number, dto: UpdateEmployeeDTO) {
     if (dto.password) {
+      // Si se actualiza la contraseña, se hashea y se guarda
       const salt = await brcypt.genSalt(10);
       const hashed = await brcypt.hash(dto.password, salt);
       dto.password = hashed;
