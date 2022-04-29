@@ -361,6 +361,12 @@ export class CustomerLeadsService {
       throw new NotFoundException();
     }
 
-    return customer.addresses;
+    const { addresses } = customer;
+
+    const orderedAddresses = addresses.sort((a) => {
+      return a.defaultshipping ? -1 : 1;
+    });
+
+    return orderedAddresses;
   }
 }
