@@ -5,6 +5,12 @@ import { User } from '~core/interfaces/user.interface';
 
 export type UserDocument = UserModel & Document;
 
+/**
+ * User Schema
+ *
+ * @export UserModel
+ * @interface UserModel
+ */
 @Schema({
   timestamps: true,
 })

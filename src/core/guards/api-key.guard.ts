@@ -5,10 +5,22 @@ import { Observable } from 'rxjs';
 
 import { API_KEY_KEY } from '~core/decorators/api-key.decorator';
 
+/**
+ * API Key Guard
+ *
+ * @export Guard
+ */
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
+  /**
+   * Valida si la petición tiene una API Key válida
+   * Can Activate
+   *
+   * @param {ExecutionContext} context
+   * @returns {(Promise<boolean> | boolean)}
+   */
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {

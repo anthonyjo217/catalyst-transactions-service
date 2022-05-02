@@ -32,7 +32,18 @@ export class CustomerLeadsService {
     private employessService: EmployeesService,
   ) {}
 
+  /**
+   * @description Obtiene los leads de un asesor o busca leads por un criterio
+   *
+   * @param id - Sales Rep ID
+   * @param page - Page number
+   * @param limit - Limit per page
+   * @param query - Search query
+   * @returns PaginateResult<CustomerLeadModel[]>
+   */
   async findAll(id: string, page = 1, limit = 10, query?: string) {
+    // Si hay un query se usa un text search para buscar en todos los datos
+    // Si no hay query se usa una query normal que busca por el id del asesor
     const querySearch = query
       ? [
           {
@@ -55,8 +66,10 @@ export class CustomerLeadsService {
           },
         ];
 
+    // se calcula de cuanto será el salto de página
     const skip = (page - 1) * limit;
 
+    // Promesa que obtiene los leads
     const searchPromise = this.customerLeadProvider
       .aggregate(
         [
@@ -73,15 +86,20 @@ export class CustomerLeadsService {
       .limit(limit > 0 ? limit : 20)
       .exec();
 
+    // Promesa que obtiene el total de leads para la busqueda
     const countPromise = this.customerLeadProvider
       .aggregate([...querySearch])
       .count('total')
       .exec();
 
+    // Se espera a que las promesas se resuelvan
     const [search, count] = await Promise.all([searchPromise, countPromise]);
+
+    // se calcula el total de páginas
     const pages =
       limit > 0 ? Math.ceil((count[0]?.total || 0) / limit) || 1 : null;
 
+    // Se retorna el resultado
     const result: Partial<PaginateResult<CustomerLead>> = {
       docs: search,
       hasNextPage: page < pages,
@@ -92,6 +110,9 @@ export class CustomerLeadsService {
     return result;
   }
 
+  /**
+   * @deprecated No se usa
+   */
   async paginate(page: number, limit: number, id?: string, search?: string) {
     const query = search ? { $text: { $search: search } } : { salesrep_id: id };
 
@@ -108,6 +129,12 @@ export class CustomerLeadsService {
     );
   }
 
+  /**
+   * @description Obtiene un lead por su id
+   *
+   * @param id - Customer ID
+   * @returns CustomerLeadModel
+   */
   async findOne(id: number) {
     const user = await this.customerLeadProvider
       .findOne({ _id: id }, userProject)
@@ -117,6 +144,7 @@ export class CustomerLeadsService {
       throw new NotFoundException();
     }
 
+    // Se ordenan las direcciones por default shipping
     const { addresses } = user;
     const orderedAddresses = addresses.sort((a) => {
       return a.defaultshipping ? -1 : 1;
@@ -125,10 +153,12 @@ export class CustomerLeadsService {
     let sales_rep = null;
     let referrer = null;
 
+    // Si el lead tiene un asesor se obtiene su información
     if (user.salesrep_id) {
       sales_rep = await this.employessService.findOne(+user.salesrep_id);
     }
 
+    // Si el lead tiene un referrer se obtiene su información
     if (user.referred_by) {
       referrer = await this.customerLeadProvider.findOne(
         {
@@ -141,6 +171,13 @@ export class CustomerLeadsService {
     return { ...user, addresses: orderedAddresses, sales_rep, referrer };
   }
 
+  /**
+   * @description Valida si un lead existe por una propiedad y valor
+   *
+   * @param property - Nombre de la propiedad
+   * @param value - Valor de la propiedad
+   * @returns CustomerLeadModel
+   */
   async validateByProperty(
     property: 'mobilephone' | 'token' | 'id',
     value: string | number,
@@ -150,16 +187,23 @@ export class CustomerLeadsService {
       .lean();
   }
 
+  /**
+   * @description Crea un lead desde una entidad Netsuite
+   * @param dto - DTO con los datos del lead
+   */
   async create(dto: CreateFromNetsuiteDTO) {
     try {
       const { fields, sublists } = dto;
 
+      // Se elimina el email si no viene
+      // No recuerdo por que se usa pero no se si es necesario
       if (!fields.email) {
         delete fields.email;
       }
 
       const fullname = `${fields.firstname} ${fields.lastname}`;
       const addresses = sublists.addressbook.map((address) => {
+        // Para las direcciones se crea un addresse con el nombre del lead si no viene
         const addresse = address.addresse ? address.addresse : fullname;
 
         return {
@@ -168,7 +212,10 @@ export class CustomerLeadsService {
         };
       });
 
+      // Campos ligados a tissini plus
       const hrc: CustomerLeadHrc = { ...dto.fields };
+
+      // Se crea el lead
       const customerLead: CustomerLead = {
         ...fields,
         hrc,
@@ -178,13 +225,16 @@ export class CustomerLeadsService {
         name: `${fields.firstname} ${fields.lastname}`,
       };
 
+      // Se valida si el lead ya existe
       const exists = await this.customerLeadProvider.exists({ _id: fields.id });
       if (exists) {
+        // Si el lead ya existe se actualiza
         await this.customerLeadProvider.updateOne(
           { _id: fields.id },
           { $set: { ...customerLead } },
         );
       } else {
+        // Si no existe se crea
         await this.customerLeadProvider.create(customerLead);
       }
       return { success: true };
@@ -194,6 +244,13 @@ export class CustomerLeadsService {
     }
   }
 
+  /**
+   * @description Actualiza un lead con un token de recuperación
+   *
+   * @param id - Customer ID
+   * @param token - Token de la entidad
+   * @returns CustomerLeadModel
+   */
   async setRefreshToken(id: number, token: string | null) {
     return this.customerLeadProvider.updateOne(
       { id },
@@ -201,17 +258,24 @@ export class CustomerLeadsService {
     );
   }
 
+  /**
+   * Se crea un lead en Netsuite
+   *
+   * @param dto - DTO con los datos del lead
+   */
   async createLead(dto: CreateLeadDTO) {
     try {
       const lead: CreateToNetsuiteDTO = {
         ...dto,
       };
 
+      // Request que se envia a Netsuite
       const request: NetsuiteRequest<CreateToNetsuiteDTO> = {
         method: 'CustomerController.create',
         values: lead,
       };
 
+      // Se crea el lead en Netsuite
       const { data } = await firstValueFrom(
         this.httpService.post(process.env.NETSUITE_SERVICE, request, {
           headers: {
@@ -226,6 +290,11 @@ export class CustomerLeadsService {
     }
   }
 
+  /**
+   * @description Actualiza o crea una dirección de un lead en Netsuite
+   * @param dto - DTO con los datos de la dirección
+   * @returns
+   */
   async createOrUpdateAddress(dto: CreateLeadAddressDTO) {
     try {
       if (!dto.addressId) {
@@ -249,6 +318,12 @@ export class CustomerLeadsService {
     }
   }
 
+  /**
+   * @description Genera el token de ingreso de un lead
+   *
+   * @param id - Customer ID
+   * @returns token - Token de la entidad
+   */
   async generateToken(id: number) {
     const url = `https://v3.tissini.app/api/v3/login/by/id/${id}`;
     const authorization =
@@ -264,10 +339,18 @@ export class CustomerLeadsService {
     return { token };
   }
 
+  /**
+   * @description Elimina un lead de Netsuite
+   * @param id - Customer ID
+   */
   delete(id: number) {
     return this.customerLeadProvider.deleteOne({ _id: id });
   }
 
+  /**
+   * @description Obtiene las direcciones de un lead
+   * @param id - Customer ID
+   */
   async getAddresses(id: number) {
     const customer = await this.customerLeadProvider.findOne(
       { _id: id },
@@ -278,6 +361,12 @@ export class CustomerLeadsService {
       throw new NotFoundException();
     }
 
-    return customer.addresses;
+    const { addresses } = customer;
+
+    const orderedAddresses = addresses.sort((a) => {
+      return a.defaultshipping ? -1 : 1;
+    });
+
+    return orderedAddresses;
   }
 }
