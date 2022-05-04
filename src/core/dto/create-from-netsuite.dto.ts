@@ -342,6 +342,7 @@ export class Fields extends EmployeeFields {
   shipcity: string;
 
   @IsString()
+  @Transform(({ value }) => value.replace(/[^0-9]/g, ''))
   mobilephone: string;
 
   @Transform(({ value }) => value)
