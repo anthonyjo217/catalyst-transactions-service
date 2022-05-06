@@ -369,4 +369,19 @@ export class CustomerLeadsService {
 
     return orderedAddresses;
   }
+
+  async getByPhoneNumber(phoneNumber: string) {
+    const customer = await this.customerLeadProvider.findOne(
+      {
+        mobilephone: phoneNumber,
+      },
+      { _id: 1 },
+    );
+
+    if (!customer) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    return customer;
+  }
 }
