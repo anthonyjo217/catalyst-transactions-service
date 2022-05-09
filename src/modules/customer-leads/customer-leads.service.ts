@@ -223,6 +223,7 @@ export class CustomerLeadsService {
         salesrep_id: sublists.salesteam['line 1'].employee,
         _id: fields.id,
         name: `${fields.firstname} ${fields.lastname}`,
+        email: fields.email ? fields.email.toLowerCase() : null,
       };
 
       // Se valida si el lead ya existe
