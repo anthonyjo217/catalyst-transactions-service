@@ -223,6 +223,7 @@ export class CustomerLeadsService {
         salesrep_id: sublists.salesteam['line 1'].employee,
         _id: fields.id,
         name: `${fields.firstname} ${fields.lastname}`,
+        email: fields.email ? fields.email.toLowerCase() : null,
       };
 
       // Se valida si el lead ya existe
@@ -368,5 +369,20 @@ export class CustomerLeadsService {
     });
 
     return orderedAddresses;
+  }
+
+  async getByPhoneNumber(phoneNumber: string) {
+    const customer = await this.customerLeadProvider.findOne(
+      {
+        mobilephone: phoneNumber,
+      },
+      { _id: 1 },
+    );
+
+    if (!customer) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    return customer;
   }
 }

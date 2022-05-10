@@ -49,28 +49,24 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Deploying
-        uses: qazz92/kubectl@1.0.3
+        uses: kodermax/kubectl-aws-eks@1.1.0
         env:
+          KUBECTL_VERSION: 'v1.22.0'
+          IAM_VERSION: '0.5.6'
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: catalyst-user-service
           IMAGE_TAG: ${{ github.sha }}
           K8S_NS: catalyst-user-service
-          kube_confg_data: ${{ secrets.KUBE_CONFIG_DATA }}
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_region: us-east-1
         with:
           args: -n $K8S_NS --record deployment.apps/catalyst-user-service-deployment set image $ECR_REPOSITORY=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Verifying Deployment
-        uses: qazz92/kubectl@1.0.3
+        uses: kodermax/kubectl-aws-eks@1.1.0
         env:
+          KUBECTL_VERSION: 'v1.22.0'
+          IAM_VERSION: '0.5.6'
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
           K8S_NS: catalyst-user-service
-          kube_confg_data: ${{ secrets.KUBE_CONFIG_DATA }}
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_region: us-east-1
         with:
           args: -n $K8S_NS rollout status deployment.apps/catalyst-user-service-deployment

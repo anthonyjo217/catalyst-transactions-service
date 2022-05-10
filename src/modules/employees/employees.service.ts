@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as brcypt from 'bcrypt';
@@ -27,8 +27,7 @@ export class EmployeesService {
    * @param password The password of the employee
    */
   async validate(email: string, password: string) {
-    const employee = await this.employeeProvider.findOne({ email }).lean();
-
+    const employee = await this.getByEmail(email, true);
     if (!employee) {
       return null;
     }
@@ -81,7 +80,12 @@ export class EmployeesService {
       // Si existe se actualiza
       await this.employeeProvider.updateOne(
         { _id: employee._id },
-        { $set: employee },
+        {
+          $set: {
+            ...employee,
+            email: info.email.toLowerCase(),
+          },
+        },
       );
     } else {
       // Si no existe se crea y se envia un correo para que cambie la contraseña
@@ -104,6 +108,7 @@ export class EmployeesService {
         ...employee,
         password: '',
         recover_password_token: token,
+        email: employee.email.toLowerCase(),
       });
     }
     return { success: true };
@@ -132,8 +137,34 @@ export class EmployeesService {
     return this.employeeProvider.updateOne({ _id: id }, dto);
   }
 
-  async getByEmail(email: string) {
-    return this.employeeProvider.findOne({ email }).lean();
+  async getByEmail(email: string, withPassword = false) {
+    const project = {
+      entityid: 1,
+      firstname: 1,
+      lastname: 1,
+      stage: 1,
+      id_8x8: 1,
+    };
+
+    if (withPassword) {
+      project['password'] = 1;
+    }
+
+    const result = await this.employeeProvider.aggregate([
+      {
+        $project: {
+          ...project,
+          email: { $toLower: '$email' },
+        },
+      },
+      {
+        $match: {
+          email: email.toLowerCase(),
+        },
+      },
+    ]);
+
+    return result[0];
   }
 
   async setRecoverToken(id: number, token: string) {
@@ -153,5 +184,17 @@ export class EmployeesService {
     const salt = await brcypt.genSalt(10);
     const hashed = await brcypt.hash(password, salt);
     return this.employeeProvider.updateOne({ _id: id }, { password: hashed });
+  }
+
+  async getBy88Id(id: string) {
+    const employee = await this.employeeProvider
+      .findOne({ id_8x8: id }, { _id: 1 })
+      .lean();
+
+    if (!employee) {
+      throw new NotFoundException('Employee not found');
+    }
+
+    return employee;
   }
 }
