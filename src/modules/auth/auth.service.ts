@@ -77,7 +77,7 @@ export class AuthService {
   async login({ password, username }: LoginDTO) {
     const user = await this.employeesService.validate(username, password);
 
-    const tokens = await this.getTokens(user);
+    const tokens = await this.getTokens(user as User);
 
     // Se valida que el usuario este logueado
     // Si no está se actualiza el usuario en la base de datos
@@ -185,5 +185,13 @@ export class AuthService {
     return {
       success: true,
     };
+  }
+
+  async checkEmail(email: string) {
+    const user = await this.employeesService.checkEmail(email);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return { user };
   }
 }
