@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as brcypt from 'bcrypt';
@@ -20,9 +20,14 @@ export class EmployeesService {
     private emailService: EmailService,
   ) {}
 
+  /**
+   * Gets an employee by its email and validate the password
+   *
+   * @param email The email of the employee
+   * @param password The password of the employee
+   */
   async validate(email: string, password: string) {
-    const employee = await this.employeeProvider.findOne({ email }).lean();
-
+    const employee = await this.getByEmail(email, true);
     if (!employee) {
       return null;
     }
@@ -30,14 +35,18 @@ export class EmployeesService {
     const { password: hashed, ...rest } = employee;
     const isValid = await brcypt.compare(password, hashed);
 
-    console.log(password.length);
-
     if (!isValid) {
       return null;
     }
     return rest;
   }
 
+  /**
+   * Setea si el usuario esta activo o no
+   *
+   * @param id The id of the employee
+   * @param isLoggedIn The flag that indicates if the employee is logged in
+   */
   async setIsLoggedIn(id: number, isLoggedIn: boolean) {
     return this.employeeProvider.updateOne(
       { _id: id },
@@ -52,6 +61,11 @@ export class EmployeesService {
     );
   }
 
+  /**
+   * Crea un asesor desde netsuite
+   *
+   * @param info The info of the employee
+   */
   async create(info: Fields) {
     const employee: Employee = {
       ...info,
@@ -60,13 +74,21 @@ export class EmployeesService {
       stage: 'EMPLOYEE',
     };
 
+    // Se valida si el usuario ya existe
     const exists = await this.employeeProvider.exists({ _id: employee._id });
     if (exists) {
+      // Si existe se actualiza
       await this.employeeProvider.updateOne(
         { _id: employee._id },
-        { $set: employee },
+        {
+          $set: {
+            ...employee,
+            email: info.email.toLowerCase(),
+          },
+        },
       );
     } else {
+      // Si no existe se crea y se envia un correo para que cambie la contraseña
       const params = {
         createPassword: true,
       };
@@ -86,6 +108,7 @@ export class EmployeesService {
         ...employee,
         password: '',
         recover_password_token: token,
+        email: employee.email.toLowerCase(),
       });
     }
     return { success: true };
@@ -97,8 +120,14 @@ export class EmployeesService {
       .lean();
   }
 
+  /**
+   *
+   * @param id The id of the employee
+   * @param dto The data to update
+   */
   async update(id: number, dto: UpdateEmployeeDTO) {
     if (dto.password) {
+      // Si se actualiza la contraseña, se hashea y se guarda
       const salt = await brcypt.genSalt(10);
       const hashed = await brcypt.hash(dto.password, salt);
       dto.password = hashed;
@@ -108,11 +137,37 @@ export class EmployeesService {
     return this.employeeProvider.updateOne({ _id: id }, dto);
   }
 
-  async getByEmail(email: string, isCheck = false) {
-    const project = isCheck
-      ? { email: 1, firstname: 1, lastname: 1, _id: 0 }
-      : {};
-    return this.employeeProvider.findOne({ email }, project).lean();
+  async getByEmail(
+    email: string,
+    withPassword = false,
+  ): Promise<Partial<Employee>> {
+    const project = {
+      entityid: 1,
+      firstname: 1,
+      lastname: 1,
+      stage: 1,
+      id_8x8: 1,
+    };
+
+    if (withPassword) {
+      project['password'] = 1;
+    }
+
+    const result = await this.employeeProvider.aggregate([
+      {
+        $project: {
+          ...project,
+          email: { $toLower: '$email' },
+        },
+      },
+      {
+        $match: {
+          email: email.toLowerCase(),
+        },
+      },
+    ]);
+
+    return result[0];
   }
 
   async setRecoverToken(id: number, token: string) {
@@ -132,5 +187,23 @@ export class EmployeesService {
     const salt = await brcypt.genSalt(10);
     const hashed = await brcypt.hash(password, salt);
     return this.employeeProvider.updateOne({ _id: id }, { password: hashed });
+  }
+
+  async getBy88Id(id: string) {
+    const employee = await this.employeeProvider
+      .findOne({ id_8x8: id }, { _id: 1 })
+      .lean();
+
+    if (!employee) {
+      throw new NotFoundException('Employee not found');
+    }
+
+    return employee;
+  }
+
+  async checkEmail(emailToCheck: string) {
+    const employee = await this.getByEmail(emailToCheck);
+    const { email, firstname, lastname } = employee;
+    return { email, firstname, lastname };
   }
 }

@@ -124,4 +124,19 @@ export class AppController {
   async generateToken(@Param('id', new ParseIntPipe()) id: number) {
     return this.customerLeadService.generateToken(id);
   }
+
+  @IsPublic()
+  @ApiKey()
+  @UseGuards(ApiKeyGuard)
+  @Get(':id/customer-leads/:phone')
+  async getCustomerLeads(
+    @Param('id') employeeId: string,
+    @Param('phone') phone: string,
+  ) {
+    const employee = (await this.employeeService.getBy88Id(employeeId))._id;
+    const customer = (await this.customerLeadService.getByPhoneNumber(phone))
+      ._id;
+
+    return { employee, customer };
+  }
 }

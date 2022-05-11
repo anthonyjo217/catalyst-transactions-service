@@ -16,6 +16,19 @@ export enum USER_TYPES {
   SALESREP = 'EMPLOYEE',
 }
 
+/**
+ * Estas clase son bastante dificil de explicar y mantener, pero es la que nos permite
+ * convertir un objeto de tipo User de NetSuite a un objeto de tipo User de nuestro
+ * sistema.
+ *
+ * Hay propiedades que no se pueden convertir directamente porque su valor es una
+ * letra que representan un valor booleano en NetSuite (T y F).
+ *
+ * Para convertir estas propiedades hay que usar una función de transformación
+ * que convierte la letra en un valor booleano.
+ *
+ */
+
 export class AddressLine {
   @IsString()
   @Transform(({ value }) => Number(value))
@@ -329,6 +342,7 @@ export class Fields extends EmployeeFields {
   shipcity: string;
 
   @IsString()
+  @Transform(({ value }) => value.replace(/[^0-9]/g, ''))
   mobilephone: string;
 
   @Transform(({ value }) => value)

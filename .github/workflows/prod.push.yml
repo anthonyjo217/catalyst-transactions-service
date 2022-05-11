@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - 'main'
-  # pull_request:
-  #   branches:
-  #     - 'dev'
 
 jobs:
   build-push:
@@ -52,8 +49,10 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Deploying
-        uses: kodermax/kubectl-aws-eks@master
+        uses: kodermax/kubectl-aws-eks@1.1.0
         env:
+          KUBECTL_VERSION: 'v1.22.0'
+          IAM_VERSION: '0.5.6'
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: catalyst-user-service
@@ -63,8 +62,10 @@ jobs:
           args: -n $K8S_NS --record deployment.apps/catalyst-user-service-deployment set image $ECR_REPOSITORY=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Verifying Deployment
-        uses: kodermax/kubectl-aws-eks@master
+        uses: kodermax/kubectl-aws-eks@1.1.0
         env:
+          KUBECTL_VERSION: 'v1.22.0'
+          IAM_VERSION: '0.5.6'
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
           K8S_NS: catalyst-user-service
         with:

@@ -1,5 +1,8 @@
 import { CustomerLead } from '~core/interfaces/customer-lead.interface';
 
+// Este projecto es basicamente la información de la emprendedora que se manda
+// al frontend
+
 export const userProject: MongoProject<CustomerLead> = {
   _id: 1,
   firstname: 1,
@@ -48,8 +51,12 @@ export const userProject: MongoProject<CustomerLead> = {
   meses_total_acumulado: 1,
   metas_mes_anterior: 1,
   ship_to_walgreens: 1,
+  balance: 1,
 };
 
+// Este es un tipo que transforma el modelo o interface que se le pase a una forma
+// en que se pueda decidir que campos se quieren mandar al frontend
+// 1 - se manda, 0 - no se manda
 export type MongoProject<T> = {
   [key in keyof T]?: T[key] extends string | number | boolean
     ? number
