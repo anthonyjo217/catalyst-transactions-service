@@ -85,7 +85,13 @@ export class AuthController {
       loginDTO,
     );
 
-    this.sendCookiesResponse(res, req, access_token, refresh_token, user);
+    this.sendCookiesResponse(
+      res,
+      req,
+      access_token,
+      refresh_token,
+      user as Employee,
+    );
   }
 
   /**
