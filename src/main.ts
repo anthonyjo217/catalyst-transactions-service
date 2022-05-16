@@ -16,6 +16,7 @@ async function bootstrap() {
       'https://seller.tissini.cloud',
       'http://localhost:3000',
       'http://localhost:8080',
+      'http://localhost:8081',
     ], // TODO pass to env
   });
   const port = process.env.PORT || 3030;
