@@ -85,7 +85,13 @@ export class AuthController {
       loginDTO,
     );
 
-    this.sendCookiesResponse(res, req, access_token, refresh_token, user);
+    this.sendCookiesResponse(
+      res,
+      req,
+      access_token,
+      refresh_token,
+      user as Employee,
+    );
   }
 
   /**
@@ -213,5 +219,11 @@ export class AuthController {
   @Post('reset-password/:token')
   async resetPassword(@Body() { token, password }: RecoverPasswordDTO) {
     return this.authService.resetPassword(token, password);
+  }
+
+  @IsPublic()
+  @Get('check-email/:email')
+  async checkEmail(@Param('email') email: string) {
+    return this.authService.checkEmail(email);
   }
 }

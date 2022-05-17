@@ -137,13 +137,17 @@ export class EmployeesService {
     return this.employeeProvider.updateOne({ _id: id }, dto);
   }
 
-  async getByEmail(email: string, withPassword = false) {
+  async getByEmail(
+    email: string,
+    withPassword = false,
+  ): Promise<Partial<Employee>> {
     const project = {
       entityid: 1,
       firstname: 1,
       lastname: 1,
       stage: 1,
       id_8x8: 1,
+      is_logged_in: 1,
     };
 
     if (withPassword) {
@@ -196,5 +200,11 @@ export class EmployeesService {
     }
 
     return employee;
+  }
+
+  async checkEmail(emailToCheck: string) {
+    const employee = await this.getByEmail(emailToCheck);
+    const { email, firstname, lastname } = employee;
+    return { email, firstname, lastname };
   }
 }
