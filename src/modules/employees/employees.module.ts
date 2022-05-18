@@ -5,7 +5,6 @@ import { EmployeeModel, EmployeeSchema } from './models/employee.model';
 
 import { EmployeesService } from './employees.service';
 import { EmployeesController } from './employees.controller';
-import { EmailModule } from '../email/email.module';
 
 @Module({
   imports: [
@@ -16,7 +15,6 @@ import { EmailModule } from '../email/email.module';
         collection: 'employees',
       },
     ]),
-    EmailModule,
   ],
   controllers: [EmployeesController],
   providers: [EmployeesService],

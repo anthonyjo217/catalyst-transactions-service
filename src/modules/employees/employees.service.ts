@@ -7,17 +7,14 @@ import { Fields } from '~core/dto/create-from-netsuite.dto';
 import { Employee } from '~core/interfaces/employee.interface';
 
 import { EmployeeModel } from './models/employee.model';
-import { EmailOptions } from '../email/interfaces/email-options.interface';
 import { UpdateEmployeeDTO } from './dto/update-employee.dto';
 import generatePasswordUrl from '../../helpers/generate-password-url';
-import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class EmployeesService {
   constructor(
     @InjectModel(EmployeeModel.name)
     private employeeProvider: Model<EmployeeModel>,
-    private emailService: EmailService,
   ) {}
 
   /**
@@ -93,17 +90,6 @@ export class EmployeesService {
         createPassword: true,
       };
       const { url, token } = generatePasswordUrl(params);
-      const options: EmailOptions = {
-        subject: 'Bienvenido a Tissini Seller',
-        text: '',
-        to: employee.email,
-        template: 'create-password',
-        variables: {
-          url,
-        },
-      };
-
-      this.emailService.sendEmail(options);
       await this.employeeProvider.create({
         ...employee,
         password: '',
