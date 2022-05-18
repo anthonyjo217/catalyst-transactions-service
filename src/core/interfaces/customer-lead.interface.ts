@@ -2,6 +2,7 @@ import { Address } from './address.interface';
 import { User } from './user.interface';
 
 export interface CustomerLead extends User {
+  parent_id: string;
   foco_rfm: boolean;
   startdate: string;
   unsubscribe: boolean;
