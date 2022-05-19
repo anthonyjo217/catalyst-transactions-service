@@ -1,15 +1,11 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 import * as crypto from 'crypto';
 
-// ! MailgunJs imports
-import * as FormData from 'form-data';
-import Mailgun from 'mailgun.js';
 import { firstValueFrom } from 'rxjs';
-
-const mailgun = new Mailgun(FormData);
 
 import { USER_TYPES } from '~core/dto/create-from-netsuite.dto';
 import { User } from '~core/interfaces/user.interface';
@@ -25,6 +21,7 @@ export class AuthService {
     private employeesService: EmployeesService,
     private customerLeadsService: CustomerLeadsService,
     private httpService: HttpService,
+    private configService: ConfigService,
   ) {}
 
   /**
@@ -41,13 +38,13 @@ export class AuthService {
    * @returns {Promise<{accessToken: string, refreshToken: string}>}
    */
   async getTokens(user: User) {
-    const { JWT_SECRET, JWT_REFRESH_SECRET } = process.env;
-    const access_token = this.jwtService.sign({ user }, { secret: JWT_SECRET });
+    const jwtSecret = this.configService.get('JWT_SECRET');
+    const refreshSecret = this.configService.get('REFRESH_SECRET');
+
+    const access_token = this.jwtService.sign({ user }, { secret: jwtSecret });
     const refresh_token = this.jwtService.sign(
       { user },
-      {
-        secret: JWT_REFRESH_SECRET,
-      },
+      { secret: refreshSecret },
     );
 
     if (!user) {
@@ -68,7 +65,8 @@ export class AuthService {
    * @returns {string} token
    */
   getAccessToken(user: User) {
-    return this.jwtService.sign({ user }, { secret: process.env.JWT_SECRET });
+    const jwtSecret = this.configService.get('JWT_SECRET');
+    return this.jwtService.sign({ user }, { secret: jwtSecret });
   }
 
   /**
@@ -84,12 +82,11 @@ export class AuthService {
     if (!user.is_logged_in) {
       await this.employeesService.setIsLoggedIn(user._id, true);
     } else {
+      const url = this.configService.get('NOTIFICATION_SERVICE');
       // Si el usuario está logueado, se manda una notificación que cierra
       // cualquier sesión abierta
       firstValueFrom(
-        this.httpService.post(
-          `${process.env.NOTIFICATION_SERVICE}/v1/auth/logout/${user._id}`,
-        ),
+        this.httpService.post(`${url}/v1/auth/logout/${user._id}`),
       );
     }
 
@@ -137,29 +134,13 @@ export class AuthService {
 
       // Se crea un token para recuperar la contraseña y se guarda en la base de datos
       const token = crypto.randomBytes(64).toString('hex');
-      const url = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+      const frontendUrl = this.configService.get('FRONTEND_URL');
+      const url = `${frontendUrl}/reset-password/${token}`;
       await this.employeesService.setRecoverToken(user._id, token);
 
-      const mailgunClient = mailgun.client({
-        username: 'api',
-        key: process.env.MAILGUN_API_KEY,
-        url: 'https://api.mailgun.net/',
-      });
+      // ! TODO send recover email using email service
 
-      // Se envia el correo
-      await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN, {
-        from: 'TISSINI SELLER <no-responder@notificaciones.tissini.cloud>',
-        to: user.email,
-        subject: 'Recuperación de contraseña',
-        template: 'recover-password',
-        text: 'Recuperar contraseña',
-        'h:X-Mailgun-Variables': JSON.stringify({
-          account: user.email,
-          url,
-        }),
-      });
-
-      return { success: true };
+      return { success: true, url };
     } catch (error) {
       return { success: false };
     }

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { HttpModule } from '@nestjs/axios';
 
 import { EmployeeModel, EmployeeSchema } from './models/employee.model';
 
@@ -8,6 +9,7 @@ import { EmployeesController } from './employees.controller';
 
 @Module({
   imports: [
+    HttpModule,
     MongooseModule.forFeature([
       {
         name: EmployeeModel.name,

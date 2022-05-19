@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { HttpService } from '@nestjs/axios';
 import { Model } from 'mongoose';
 import * as brcypt from 'bcrypt';
 
@@ -15,6 +16,7 @@ export class EmployeesService {
   constructor(
     @InjectModel(EmployeeModel.name)
     private employeeProvider: Model<EmployeeModel>,
+    private httpService: HttpService,
   ) {}
 
   /**
@@ -89,7 +91,17 @@ export class EmployeesService {
       const params = {
         createPassword: true,
       };
-      const { url, token } = generatePasswordUrl(params);
+      const { token } = generatePasswordUrl(params);
+
+      /* const emailOptions = {
+        to: employee.email,
+        subject: 'Cambio de contraseña',
+        template: 'create-password',
+        'h:X-Mailgun-Variables': {
+          url,
+        },
+      }; */
+
       await this.employeeProvider.create({
         ...employee,
         password: '',
