@@ -136,6 +136,7 @@ export class CustomerLeadsService {
    * @returns CustomerLeadModel
    */
   async findOne(id: number) {
+    // ! TODO pasar esto a una transacción
     const user = await this.customerLeadProvider
       .findOne({ _id: id }, userProject)
       .lean();
@@ -152,10 +153,20 @@ export class CustomerLeadsService {
 
     let sales_rep = null;
     let referrer = null;
+    let parent = null;
 
     // Si el lead tiene un asesor se obtiene su información
     if (user.salesrep_id) {
       sales_rep = await this.employessService.findOne(+user.salesrep_id);
+    }
+
+    if (user.parent_id) {
+      parent = await this.customerLeadProvider
+        .findOne(
+          { _id: `${user.parent_id}` },
+          { _id: 1, firstname: 1, lastname: 1 },
+        )
+        .lean();
     }
 
     // Si el lead tiene un referrer se obtiene su información
@@ -168,7 +179,13 @@ export class CustomerLeadsService {
       );
     }
 
-    return { ...user, addresses: orderedAddresses, sales_rep, referrer };
+    return {
+      ...user,
+      addresses: orderedAddresses,
+      sales_rep,
+      referrer,
+      parent,
+    };
   }
 
   /**
