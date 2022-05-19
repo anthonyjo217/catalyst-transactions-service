@@ -15,6 +15,9 @@ import { CustomerLeadHrcSchema } from './customer-lead-hrc.model';
   versionKey: false,
 })
 export class CustomerLeadModel extends UserModel implements CustomerLead {
+  @Prop({ index: true })
+  parent_id: string;
+
   @Prop()
   catalyst_inboxsms_load: boolean;
 

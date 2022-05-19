@@ -731,6 +731,9 @@ export class Fields extends EmployeeFields {
   @Expose({ name: 'hasparent' })
   hasparent: boolean;
 
+  @Expose({ name: 'parent' })
+  parent_id: string;
+
   @Transform(({ value }) => value)
   @Expose({ name: 'custentitynum_sales_mitienda' })
   sales_mitienda: string;

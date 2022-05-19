@@ -1,12 +1,15 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
   Param,
+  ParseBoolPipe,
   ParseIntPipe,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -186,8 +189,15 @@ export class AuthController {
    * @param res Response
    */
   @Delete('logout')
-  async logout(@Req() req, @Res() res: Response) {
-    await this.authService.logout(req.user._id);
+  async logout(
+    @Req() req,
+    @Res() res: Response,
+    @Query('keep', new ParseBoolPipe(), new DefaultValuePipe(false))
+    keep: boolean,
+  ) {
+    if (!keep) {
+      await this.authService.logout(req.user._id);
+    }
 
     res
       .clearCookie('access_token', COOKIES_OPTIONS)
