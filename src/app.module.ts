@@ -19,7 +19,7 @@ import { CoreModule } from './core/core.module';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
         return {
-          uri: configService.get('DB_URI'),
+          uri: configService.get('MONGODB_HOST'),
         };
       },
     }),

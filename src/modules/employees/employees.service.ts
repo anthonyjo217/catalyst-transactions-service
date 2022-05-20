@@ -10,6 +10,8 @@ import { Employee } from '~core/interfaces/employee.interface';
 import { EmployeeModel } from './models/employee.model';
 import { UpdateEmployeeDTO } from './dto/update-employee.dto';
 import generatePasswordUrl from '../../helpers/generate-password-url';
+import { firstValueFrom } from 'rxjs';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EmployeesService {
@@ -17,6 +19,7 @@ export class EmployeesService {
     @InjectModel(EmployeeModel.name)
     private employeeProvider: Model<EmployeeModel>,
     private httpService: HttpService,
+    private configService: ConfigService,
   ) {}
 
   /**
@@ -73,10 +76,8 @@ export class EmployeesService {
       stage: 'EMPLOYEE',
     };
 
-    // Se valida si el usuario ya existe
     const exists = await this.employeeProvider.exists({ _id: employee._id });
     if (exists) {
-      // Si existe se actualiza
       await this.employeeProvider.updateOne(
         { _id: employee._id },
         {
@@ -87,20 +88,29 @@ export class EmployeesService {
         },
       );
     } else {
-      // Si no existe se crea y se envia un correo para que cambie la contraseña
       const params = {
         createPassword: true,
       };
-      const { token } = generatePasswordUrl(params);
+      const { token, url } = generatePasswordUrl(params);
 
-      /* const emailOptions = {
+      const emailOptions = {
         to: employee.email,
         subject: 'Cambio de contraseña',
         template: 'create-password',
         'h:X-Mailgun-Variables': {
           url,
         },
-      }; */
+      };
+
+      const notService = this.configService.get('NOTIFICATION_SERVICE');
+
+      try {
+        await firstValueFrom(
+          this.httpService.post(`${notService}v1/email`, emailOptions),
+        );
+      } catch (error) {
+        console.log({ error });
+      }
 
       await this.employeeProvider.create({
         ...employee,

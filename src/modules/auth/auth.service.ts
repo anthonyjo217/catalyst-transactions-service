@@ -138,7 +138,20 @@ export class AuthService {
       const url = `${frontendUrl}/reset-password/${token}`;
       await this.employeesService.setRecoverToken(user._id, token);
 
-      // ! TODO send recover email using email service
+      const mailOptions = {
+        to: user.email,
+        subject: 'Recuperación de contraseña',
+        template: 'recover-password',
+        'h:X-Mailgun-Variables': {
+          account: user.email,
+          url,
+        },
+      };
+
+      const notService = this.configService.get('NOTIFICATION_SERVICE');
+      await firstValueFrom(
+        this.httpService.post(`${notService}v1/mail`, mailOptions),
+      );
 
       return { success: true, url };
     } catch (error) {
