@@ -164,7 +164,7 @@ export class CustomerLeadsService {
       parent = await this.customerLeadProvider
         .findOne(
           { _id: `${user.parent_id}` },
-          { _id: 1, firstname: 1, lastname: 1 },
+          { _id: 1, firstname: 1, lastname: 1, entitynumber: 1 },
         )
         .lean();
     }
