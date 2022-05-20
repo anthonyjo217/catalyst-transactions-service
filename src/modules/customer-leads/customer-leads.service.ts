@@ -295,11 +295,15 @@ export class CustomerLeadsService {
 
       // Se crea el lead en Netsuite
       const { data } = await firstValueFrom(
-        this.httpService.post(process.env.NETSUITE_SERVICE, request, {
-          headers: {
-            'X-API-KEY': process.env.NETSUITE_API_KEY,
+        this.httpService.post(
+          'https://ns.tissini.cloud/api/v1/1539/1',
+          request,
+          {
+            headers: {
+              'X-API-KEY': process.env.NETSUITE_API_KEY,
+            },
           },
-        }),
+        ),
       );
       return { data };
     } catch (error) {
