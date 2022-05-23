@@ -52,6 +52,7 @@ export const userProject: MongoProject<CustomerLead> = {
   metas_mes_anterior: 1,
   ship_to_walgreens: 1,
   balance: 1,
+  parent_id: 1,
 };
 
 // Este es un tipo que transforma el modelo o interface que se le pase a una forma

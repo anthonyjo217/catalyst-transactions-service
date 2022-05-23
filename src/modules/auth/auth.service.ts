@@ -132,26 +132,28 @@ export class AuthService {
     try {
       const user = await this.employeesService.getByEmail(email);
 
-      // Se crea un token para recuperar la contraseña y se guarda en la base de datos
-      const token = crypto.randomBytes(64).toString('hex');
-      const frontendUrl = this.configService.get('FRONTEND_URL');
-      const url = `${frontendUrl}/reset-password/${token}`;
-      await this.employeesService.setRecoverToken(user._id, token);
+      if (user) {
+        // Se crea un token para recuperar la contraseña y se guarda en la base de datos
+        const token = crypto.randomBytes(64).toString('hex');
+        const frontendUrl = this.configService.get('FRONTEND_URL');
+        const url = `${frontendUrl}/reset-password/${token}`;
+        await this.employeesService.setRecoverToken(user._id, token);
 
-      const mailOptions = {
-        to: user.email,
-        subject: 'Recuperación de contraseña',
-        template: 'recover-password',
-        'h:X-Mailgun-Variables': {
-          account: user.email,
-          url,
-        },
-      };
+        const mailOptions = {
+          to: user.email,
+          subject: 'Recuperación de contraseña',
+          template: 'recover-password',
+          'h:X-Mailgun-Variables': {
+            account: user.email,
+            url,
+          },
+        };
 
-      const notService = this.configService.get('NOTIFICATION_SERVICE');
-      await firstValueFrom(
-        this.httpService.post(`${notService}v1/email`, mailOptions),
-      );
+        const notService = this.configService.get('NOTIFICATION_SERVICE');
+        await firstValueFrom(
+          this.httpService.post(`${notService}v1/email`, mailOptions),
+        );
+      }
 
       return { success: true };
     } catch (error) {
