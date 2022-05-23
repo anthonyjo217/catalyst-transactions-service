@@ -1,14 +1,15 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { HttpModule } from '@nestjs/axios';
 
 import { EmployeeModel, EmployeeSchema } from './models/employee.model';
 
 import { EmployeesService } from './employees.service';
 import { EmployeesController } from './employees.controller';
-import { EmailModule } from '../email/email.module';
 
 @Module({
   imports: [
+    HttpModule,
     MongooseModule.forFeature([
       {
         name: EmployeeModel.name,
@@ -16,7 +17,6 @@ import { EmailModule } from '../email/email.module';
         collection: 'employees',
       },
     ]),
-    EmailModule,
   ],
   controllers: [EmployeesController],
   providers: [EmployeesService],

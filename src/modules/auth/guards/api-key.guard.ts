@@ -1,4 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
@@ -7,7 +8,10 @@ import { API_KEY_KEY } from '~core/decorators/api-key.decorator';
 
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(
+    private reflector: Reflector,
+    private configService: ConfigService,
+  ) {}
 
   canActivate(
     context: ExecutionContext,
@@ -23,7 +27,7 @@ export class ApiKeyGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest<Request>();
     const XApiKey = request.get('X-API-KEY');
-    const apiKey = process.env.API_KEY;
+    const apiKey = this.configService.get('API_KEY');
 
     return apiKey === XApiKey;
   }

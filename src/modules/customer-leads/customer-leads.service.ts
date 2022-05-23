@@ -1,5 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginateModel, PaginateResult } from 'mongoose';
 import { firstValueFrom } from 'rxjs';
@@ -30,6 +31,7 @@ export class CustomerLeadsService {
     private customerLeadProvider: PaginateModel<CustomerLeadModel>,
     private httpService: HttpService,
     private employessService: EmployeesService,
+    private configService: ConfigService,
   ) {}
 
   /**
@@ -298,17 +300,16 @@ export class CustomerLeadsService {
         values: lead,
       };
 
+      const service = this.configService.get('NETSUITE_SERVICE');
+      const key = this.configService.get('NETSUITE_API_KEY');
+
       // Se crea el lead en Netsuite
       const { data } = await firstValueFrom(
-        this.httpService.post(
-          'https://ns.tissini.cloud/api/v1/1539/1',
-          request,
-          {
-            headers: {
-              'X-API-KEY': process.env.NETSUITE_API_KEY,
-            },
+        this.httpService.post(service, request, {
+          headers: {
+            'X-API-KEY': key,
           },
-        ),
+        }),
       );
       return { data };
     } catch (error) {
@@ -332,16 +333,15 @@ export class CustomerLeadsService {
         values: dto,
       };
 
+      const service = this.configService.get('NETSUITE_SERVICE');
+      const key = this.configService.get('NETSUITE_API_KEY');
+
       const { data } = await firstValueFrom(
-        this.httpService.post(
-          'https://ns.tissini.cloud/api/v1/1539/1',
-          request,
-          {
-            headers: {
-              'X-API-KEY': process.env.NETSUITE_API_KEY,
-            },
+        this.httpService.post(service, request, {
+          headers: {
+            'X-API-KEY': key,
           },
-        ),
+        }),
       );
       return { data };
     } catch (error) {

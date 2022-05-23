@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { HttpService } from '@nestjs/axios';
 import { Model } from 'mongoose';
 import * as brcypt from 'bcrypt';
 
@@ -7,17 +8,18 @@ import { Fields } from '~core/dto/create-from-netsuite.dto';
 import { Employee } from '~core/interfaces/employee.interface';
 
 import { EmployeeModel } from './models/employee.model';
-import { EmailOptions } from '../email/interfaces/email-options.interface';
 import { UpdateEmployeeDTO } from './dto/update-employee.dto';
 import generatePasswordUrl from '../../helpers/generate-password-url';
-import { EmailService } from '../email/email.service';
+import { firstValueFrom } from 'rxjs';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EmployeesService {
   constructor(
     @InjectModel(EmployeeModel.name)
     private employeeProvider: Model<EmployeeModel>,
-    private emailService: EmailService,
+    private httpService: HttpService,
+    private configService: ConfigService,
   ) {}
 
   /**
@@ -74,10 +76,8 @@ export class EmployeesService {
       stage: 'EMPLOYEE',
     };
 
-    // Se valida si el usuario ya existe
     const exists = await this.employeeProvider.exists({ _id: employee._id });
     if (exists) {
-      // Si existe se actualiza
       await this.employeeProvider.updateOne(
         { _id: employee._id },
         {
@@ -88,22 +88,30 @@ export class EmployeesService {
         },
       );
     } else {
-      // Si no existe se crea y se envia un correo para que cambie la contraseña
       const params = {
         createPassword: true,
       };
-      const { url, token } = generatePasswordUrl(params);
-      const options: EmailOptions = {
-        subject: 'Bienvenido a Tissini Seller',
-        text: '',
+      const { token, url } = generatePasswordUrl(params);
+
+      const emailOptions = {
         to: employee.email,
+        subject: 'Cambio de contraseña',
         template: 'create-password',
-        variables: {
+        'h:X-Mailgun-Variables': {
           url,
         },
       };
 
-      this.emailService.sendEmail(options);
+      const notService = this.configService.get('NOTIFICATION_SERVICE');
+
+      try {
+        await firstValueFrom(
+          this.httpService.post(`${notService}v1/email`, emailOptions),
+        );
+      } catch (error) {
+        console.log({ error });
+      }
+
       await this.employeeProvider.create({
         ...employee,
         password: '',
