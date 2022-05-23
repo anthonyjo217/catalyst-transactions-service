@@ -135,29 +135,31 @@ export class AuthService {
     try {
       const user = await this.employeesService.getByEmail(email);
 
-      // Se crea un token para recuperar la contraseña y se guarda en la base de datos
-      const token = crypto.randomBytes(64).toString('hex');
-      const url = `${process.env.FRONTEND_URL}/reset-password/${token}`;
-      await this.employeesService.setRecoverToken(user._id, token);
+      if (user) {
+        // Se crea un token para recuperar la contraseña y se guarda en la base de datos
+        const token = crypto.randomBytes(64).toString('hex');
+        const url = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+        await this.employeesService.setRecoverToken(user._id, token);
 
-      const mailgunClient = mailgun.client({
-        username: 'api',
-        key: process.env.MAILGUN_API_KEY,
-        url: 'https://api.mailgun.net/',
-      });
+        const mailgunClient = mailgun.client({
+          username: 'api',
+          key: process.env.MAILGUN_API_KEY,
+          url: 'https://api.mailgun.net/',
+        });
 
-      // Se envia el correo
-      await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN, {
-        from: 'TISSINI SELLER <no-responder@notificaciones.tissini.cloud>',
-        to: user.email,
-        subject: 'Recuperación de contraseña',
-        template: 'recover-password',
-        text: 'Recuperar contraseña',
-        'h:X-Mailgun-Variables': JSON.stringify({
-          account: user.email,
-          url,
-        }),
-      });
+        // Se envia el correo
+        await mailgunClient.messages.create(process.env.MAILGUN_DOMAIN, {
+          from: 'TISSINI SELLER <no-responder@notificaciones.tissini.cloud>',
+          to: user.email,
+          subject: 'Recuperación de contraseña',
+          template: 'recover-password',
+          text: 'Recuperar contraseña',
+          'h:X-Mailgun-Variables': JSON.stringify({
+            account: user.email,
+            url,
+          }),
+        });
+      }
 
       return { success: true };
     } catch (error) {
