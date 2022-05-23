@@ -6,6 +6,18 @@ import { CustomerLeadHrc } from '~core/interfaces/customer-lead.interface';
 
 @Schema()
 export class CustomerLeadHrcModel implements CustomerLeadHrc {
+  @Prop({ default: 0 })
+  tcoins_ganados: number;
+
+  @Prop({ default: 0 })
+  tcoins_disponibles: number;
+
+  @Prop({ default: 0 })
+  tcoins_gastados: number;
+
+  @Prop({ default: 0 })
+  tcoins_perdidos: number;
+
   @Prop()
   realiza3compras_celeste: boolean;
 

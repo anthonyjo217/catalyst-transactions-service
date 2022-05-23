@@ -126,6 +126,10 @@ export interface CustomerLead extends User {
 }
 
 export interface CustomerLeadHrc {
+  tcoins_ganados: number;
+  tcoins_disponibles: number;
+  tcoins_gastados: number;
+  tcoins_perdidos: number;
   realiza3compras_celeste: boolean;
   beneficio_dev_pref_talla: boolean;
   reconocimiento_azul: boolean;
