@@ -39,7 +39,7 @@ export class AuthService {
    */
   async getTokens(user: User) {
     const jwtSecret = this.configService.get('JWT_SECRET');
-    const refreshSecret = this.configService.get('REFRESH_SECRET');
+    const refreshSecret = this.configService.get('JWT_REFRESH_SECRET');
 
     const access_token = this.jwtService.sign({ user }, { secret: jwtSecret });
     const refresh_token = this.jwtService.sign(
