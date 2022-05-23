@@ -65,10 +65,10 @@ export class CreateLeadDTO {
   @Expose({ name: 'store_name' })
   custentity_multivendor_store_name?: string;
 
-  // ? Is this field explicit enough?
   @IsOptional()
-  @IsInt()
-  parent_id: number;
+  @IsString()
+  @Expose({ name: 'parent_id' })
+  parent: string;
 
   @IsOptional()
   @IsArray()
