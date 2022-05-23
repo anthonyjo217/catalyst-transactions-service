@@ -249,7 +249,12 @@ export class CustomerLeadsService {
         // Si el lead ya existe se actualiza
         await this.customerLeadProvider.updateOne(
           { _id: fields.id },
-          { $set: { ...customerLead } },
+          {
+            $set: {
+              ...customerLead,
+              parent_id: fields.parent_id ?? null,
+            },
+          },
         );
       } else {
         // Si no existe se crea
