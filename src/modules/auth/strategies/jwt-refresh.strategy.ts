@@ -1,5 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-jwt';
 import { firstValueFrom } from 'rxjs';
@@ -9,7 +10,10 @@ export class JwtRefreshStrategy extends PassportStrategy(
   Strategy,
   'jwt-refresh-token',
 ) {
-  constructor(private httpService: HttpService) {
+  constructor(
+    private httpService: HttpService,
+    private configService: ConfigService,
+  ) {
     super({
       jwtFromRequest: (req) => {
         if (!req || !req.cookies) {
@@ -18,10 +22,17 @@ export class JwtRefreshStrategy extends PassportStrategy(
         return req.cookies.refresh_token;
       },
       passReqToCallback: true,
-      secretOrKey: process.env.JWT_REFRESH_SECRET,
+      secretOrKey: configService.get('JWT_SECRET'),
     });
   }
 
+  /**
+   * @deprecated
+   *
+   * @param request
+   * @param payload
+   * @returns
+   */
   async validate(request, payload: any) {
     const token = request.cookies.refresh_token;
     const { data } = await firstValueFrom(
