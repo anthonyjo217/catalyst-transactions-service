@@ -106,7 +106,7 @@ export class EmployeesService {
 
       try {
         await firstValueFrom(
-          this.httpService.post(`${notService}v1/email`, emailOptions),
+          this.httpService.post(`${notService}/v1/email`, emailOptions),
         );
       } catch (error) {
         console.log({ error });
