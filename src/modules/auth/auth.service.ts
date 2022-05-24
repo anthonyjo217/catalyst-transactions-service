@@ -151,7 +151,7 @@ export class AuthService {
 
         const notService = this.configService.get('NOTIFICATION_SERVICE');
         await firstValueFrom(
-          this.httpService.post(`${notService}v1/email`, mailOptions),
+          this.httpService.post(`${notService}/v1/email`, mailOptions),
         );
       }
 
