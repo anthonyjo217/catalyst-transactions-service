@@ -292,7 +292,12 @@ export class CustomerLeadsService {
     try {
       const lead: CreateToNetsuiteDTO = {
         ...dto,
+        custentity_is_final_client: false,
       };
+
+      if (lead.parent) {
+        lead.custentity_is_final_client = true;
+      }
 
       // Request que se envia a Netsuite
       const request: NetsuiteRequest<CreateToNetsuiteDTO> = {

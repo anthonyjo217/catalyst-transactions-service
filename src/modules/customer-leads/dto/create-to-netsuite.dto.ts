@@ -28,6 +28,7 @@ export interface CreateToNetsuiteDTO {
   custentity_ship_to_walgreens: boolean;
   parent: string;
   addresses: AddressDTO[];
+  custentity_is_final_client: boolean;
 }
 
 export interface CreateAddressToNetsuiteDTO {
