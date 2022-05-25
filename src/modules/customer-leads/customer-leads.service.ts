@@ -292,7 +292,21 @@ export class CustomerLeadsService {
     try {
       const lead: CreateToNetsuiteDTO = {
         ...dto,
+        custentity_is_final_client: false,
       };
+
+      const leadIfExists = await this.customerLeadProvider
+        .findOne(
+          {
+            _id: Number(dto.id),
+          },
+          { parent_id: 1 },
+        )
+        .lean();
+
+      if (lead.parent || leadIfExists?.parent_id) {
+        lead.custentity_is_final_client = true;
+      }
 
       // Request que se envia a Netsuite
       const request: NetsuiteRequest<CreateToNetsuiteDTO> = {
@@ -313,7 +327,6 @@ export class CustomerLeadsService {
       );
       return { data };
     } catch (error) {
-      console.log(error.response);
       throw new Error('An error ocurred while creating lead');
     }
   }
