@@ -276,6 +276,7 @@ export class CustomerLeadsService {
         custentity_is_final_client: false,
       };
 
+      let isFinalClient = Boolean(lead.parent);
       if (dto.id) {
         const leadIfExists = await this.customerLeadProvider
           .findOne(
@@ -285,18 +286,16 @@ export class CustomerLeadsService {
             { parent_id: 1 },
           )
           .lean();
-
-        if (lead.parent || leadIfExists?.parent_id) {
-          lead.custentity_is_final_client = true;
-        }
+        isFinalClient = Boolean(leadIfExists.parent_id) && !lead.parent;
       }
+
+      lead.custentity_is_final_client = isFinalClient;
 
       // Request que se envia a Netsuite
       const request: NetsuiteRequest<CreateToNetsuiteDTO> = {
         method: 'CustomerController.create',
         values: lead,
       };
-      return request;
 
       const service = this.configService.get('NETSUITE_SERVICE');
       const key = this.configService.get('NETSUITE_API_KEY');
