@@ -276,17 +276,19 @@ export class CustomerLeadsService {
         custentity_is_final_client: false,
       };
 
-      const leadIfExists = await this.customerLeadProvider
-        .findOne(
-          {
-            _id: Number(dto.id),
-          },
-          { parent_id: 1 },
-        )
-        .lean();
+      if (dto.id) {
+        const leadIfExists = await this.customerLeadProvider
+          .findOne(
+            {
+              _id: Number(dto.id),
+            },
+            { parent_id: 1 },
+          )
+          .lean();
 
-      if (lead.parent || leadIfExists?.parent_id) {
-        lead.custentity_is_final_client = true;
+        if (lead.parent || leadIfExists?.parent_id) {
+          lead.custentity_is_final_client = true;
+        }
       }
 
       // Request que se envia a Netsuite
@@ -294,6 +296,7 @@ export class CustomerLeadsService {
         method: 'CustomerController.create',
         values: lead,
       };
+      return request;
 
       const service = this.configService.get('NETSUITE_SERVICE');
       const key = this.configService.get('NETSUITE_API_KEY');
@@ -308,6 +311,7 @@ export class CustomerLeadsService {
       );
       return { data };
     } catch (error) {
+      console.log(error);
       throw new Error('An error ocurred while creating lead');
     }
   }
