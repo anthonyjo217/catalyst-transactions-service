@@ -295,7 +295,16 @@ export class CustomerLeadsService {
         custentity_is_final_client: false,
       };
 
-      if (lead.parent) {
+      const leadIfExists = await this.customerLeadProvider
+        .findOne(
+          {
+            _id: Number(dto.id),
+          },
+          { parent_id: 1 },
+        )
+        .lean();
+
+      if (lead.parent || leadIfExists?.parent_id) {
         lead.custentity_is_final_client = true;
       }
 
@@ -318,7 +327,6 @@ export class CustomerLeadsService {
       );
       return { data };
     } catch (error) {
-      console.log(error.response);
       throw new Error('An error ocurred while creating lead');
     }
   }
