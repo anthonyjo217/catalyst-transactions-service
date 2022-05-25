@@ -22,7 +22,7 @@ import {
 } from './dto/create-to-netsuite.dto';
 
 import { CustomerLeadModel } from './models/customer-lead.model';
-import { userProject } from './projects/user.project';
+import { searchProject, userProject } from './projects/user.project';
 
 @Injectable()
 export class CustomerLeadsService {
@@ -51,39 +51,20 @@ export class CustomerLeadsService {
           {
             $search: {
               index: 'search-by-entity',
-              text: {
-                query,
-                path: {
-                  wildcard: '*',
-                },
-              },
+              text: { query, path: { wildcard: '*' } },
             },
           },
         ]
-      : [
-          {
-            $match: {
-              salesrep_id: id,
-            },
-          },
-        ];
+      : [{ $match: { salesrep_id: id } }];
 
     // se calcula de cuanto será el salto de página
     const skip = (page - 1) * limit;
 
     // Promesa que obtiene los leads
     const searchPromise = this.customerLeadProvider
-      .aggregate(
-        [
-          ...querySearch,
-          {
-            $project: userProject,
-          },
-        ],
-        {
-          maxTimeMS: 10000,
-        },
-      )
+      .aggregate([...querySearch, { $project: searchProject }], {
+        maxTimeMS: 10000,
+      })
       .skip(skip)
       .limit(limit > 0 ? limit : 20)
       .exec();
@@ -295,17 +276,19 @@ export class CustomerLeadsService {
         custentity_is_final_client: false,
       };
 
-      const leadIfExists = await this.customerLeadProvider
-        .findOne(
-          {
-            _id: Number(dto.id),
-          },
-          { parent_id: 1 },
-        )
-        .lean();
+      if (dto.id) {
+        const leadIfExists = await this.customerLeadProvider
+          .findOne(
+            {
+              _id: Number(dto.id),
+            },
+            { parent_id: 1 },
+          )
+          .lean();
 
-      if (lead.parent || leadIfExists?.parent_id) {
-        lead.custentity_is_final_client = true;
+        if (lead.parent || leadIfExists?.parent_id) {
+          lead.custentity_is_final_client = true;
+        }
       }
 
       // Request que se envia a Netsuite
@@ -313,6 +296,7 @@ export class CustomerLeadsService {
         method: 'CustomerController.create',
         values: lead,
       };
+      return request;
 
       const service = this.configService.get('NETSUITE_SERVICE');
       const key = this.configService.get('NETSUITE_API_KEY');
@@ -327,6 +311,7 @@ export class CustomerLeadsService {
       );
       return { data };
     } catch (error) {
+      console.log(error);
       throw new Error('An error ocurred while creating lead');
     }
   }

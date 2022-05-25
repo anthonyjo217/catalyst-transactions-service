@@ -61,6 +61,18 @@ export const userProject: MongoProject<CustomerLead> = {
   },
 };
 
+export const searchProject: MongoProject<CustomerLead> = {
+  firstname: 1,
+  lastname: 1,
+  token: 1,
+  _id: 1,
+  mobilephone: 1,
+  stage: 1,
+  entityid: 1,
+  entitynumber: 1,
+  entitytitle: 1,
+};
+
 // Este es un tipo que transforma el modelo o interface que se le pase a una forma
 // en que se pueda decidir que campos se quieren mandar al frontend
 // 1 - se manda, 0 - no se manda
