@@ -22,7 +22,7 @@ import {
 } from './dto/create-to-netsuite.dto';
 
 import { CustomerLeadModel } from './models/customer-lead.model';
-import { userProject } from './projects/user.project';
+import { searchProject, userProject } from './projects/user.project';
 
 @Injectable()
 export class CustomerLeadsService {
@@ -51,39 +51,20 @@ export class CustomerLeadsService {
           {
             $search: {
               index: 'search-by-entity',
-              text: {
-                query,
-                path: {
-                  wildcard: '*',
-                },
-              },
+              text: { query, path: { wildcard: '*' } },
             },
           },
         ]
-      : [
-          {
-            $match: {
-              salesrep_id: id,
-            },
-          },
-        ];
+      : [{ $match: { salesrep_id: id } }];
 
     // se calcula de cuanto será el salto de página
     const skip = (page - 1) * limit;
 
     // Promesa que obtiene los leads
     const searchPromise = this.customerLeadProvider
-      .aggregate(
-        [
-          ...querySearch,
-          {
-            $project: userProject,
-          },
-        ],
-        {
-          maxTimeMS: 10000,
-        },
-      )
+      .aggregate([...querySearch, { $project: searchProject }], {
+        maxTimeMS: 10000,
+      })
       .skip(skip)
       .limit(limit > 0 ? limit : 20)
       .exec();
