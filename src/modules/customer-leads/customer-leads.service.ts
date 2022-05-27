@@ -137,6 +137,11 @@ export class CustomerLeadsService {
     let sales_rep = null;
     let referrer = null;
     let parent = null;
+    const resultado_de_contacto =
+      user.resultado_de_contacto ||
+      user.custentity_resultado_de_contacto_con_cli;
+
+    user.resultado_de_contacto = resultado_de_contacto;
 
     // Si el lead tiene un asesor se obtiene su información
     if (user.salesrep_id) {
