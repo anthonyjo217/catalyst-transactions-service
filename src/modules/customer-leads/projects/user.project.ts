@@ -4,6 +4,7 @@ import { CustomerLead } from '~core/interfaces/customer-lead.interface';
 // al frontend
 
 export const userProject: MongoProject<CustomerLead> = {
+  resultado_de_contacto: 1,
   _id: 1,
   firstname: 1,
   lastname: 1,
