@@ -249,7 +249,9 @@ export class Fields extends EmployeeFields {
   )
   custentity36: boolean;
 
-  // TODO i need the object
+  @Expose({
+    name: 'custentity_resultado_de_contacustentity_resultado_de_contacto_con_cli_old',
+  })
   custentity_resultado_de_contacto_con_cli: any;
 
   @Transform(({ obj }) => obj['custentity_hrc_smarthphone_ult_gen'] === 'T')
