@@ -144,6 +144,11 @@ export class CreateLeadDTO {
   custentity_resultado_de_contacto_con_cli: string;
 
   @IsOptional()
+  @IsNumberString()
+  @Expose({ name: 'resultado_de_contacto' })
+  custentity_resultado_de_contacustentity_resultado_de_contacto_con_cli_old: string;
+
+  @IsOptional()
   @IsInt()
   @Expose({ name: 'nacionalidad' })
   custentity_nacionalidad: number;

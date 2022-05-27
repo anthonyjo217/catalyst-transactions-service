@@ -29,6 +29,7 @@ export interface CreateToNetsuiteDTO {
   parent: string;
   addresses: AddressDTO[];
   custentity_is_final_client: boolean;
+  custentity_resultado_de_contacustentity_resultado_de_contacto_con_cli_old: string;
 }
 
 export interface CreateAddressToNetsuiteDTO {
