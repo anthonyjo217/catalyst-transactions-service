@@ -148,6 +148,9 @@ export class EmployeeFields {
 }
 
 export class Fields extends EmployeeFields {
+  @Expose({ name: 'custentity_gender' })
+  gender: string;
+
   @Transform(({ obj }) => {
     const parsed = Number(obj['custentity_hrc_total_tcoins_ganados']);
     return isNaN(parsed) ? 0 : parsed;
