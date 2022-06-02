@@ -77,13 +77,14 @@ export class EmployeesService {
     };
 
     const exists = await this.employeeProvider.exists({ _id: employee._id });
+
     if (exists) {
+      const { email, ...rest } = employee;
       await this.employeeProvider.updateOne(
         { _id: employee._id },
         {
           $set: {
-            ...employee,
-            email: info.email.toLowerCase(),
+            ...rest,
           },
         },
       );
