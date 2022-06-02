@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Query,
   Req,
@@ -108,5 +109,11 @@ export class CustomerLeadsController {
   @Post(':id/netsuite')
   async createFromNetsuite(@Body() dto: CreateFromNetsuiteDTO) {
     return await this.customerLeadsService.create(dto);
+  }
+
+  @IsPublic()
+  @Get(':id/tissini-plus')
+  async getTissiniPlus(@Param('id', new ParseIntPipe()) id: number) {
+    return this.customerLeadsService.getTissiniPlus(id);
   }
 }
