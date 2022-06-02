@@ -16,6 +16,9 @@ import { CustomerLeadHrcSchema } from './customer-lead-hrc.model';
 })
 export class CustomerLeadModel extends UserModel implements CustomerLead {
   @Prop()
+  gender: string;
+
+  @Prop()
   resultado_de_contacto: string;
 
   @Prop({ index: true })

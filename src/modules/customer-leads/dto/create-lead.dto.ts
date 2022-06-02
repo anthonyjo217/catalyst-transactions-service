@@ -19,6 +19,10 @@ import {
 
 export class CreateLeadDTO {
   @IsOptional()
+  @Expose({ name: 'gender' })
+  custentity_gender: string;
+
+  @IsOptional()
   @IsNumberString()
   @Expose({ name: '_id' })
   id?: string;
