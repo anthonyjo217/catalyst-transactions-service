@@ -128,6 +128,11 @@ export interface CustomerLead extends User {
 }
 
 export interface CustomerLeadHrc {
+  acumuladas_rosa: boolean;
+  acumuladas_magenta: boolean;
+  acumuladas_lila: boolean;
+  transicion_elite_a_plus: boolean;
+  caminocreado: boolean;
   tcoins_ganados: number;
   tcoins_disponibles: number;
   tcoins_gastados: number;

@@ -236,11 +236,14 @@ export class CustomerLeadsService {
       const exists = await this.customerLeadProvider.exists({ _id: fields.id });
       if (exists) {
         // Si el lead ya existe se actualiza
-        await this.customerLeadProvider.updateOne(
+        await this.customerLeadProvider.findOneAndUpdate(
           { _id: fields.id },
           {
             $set: {
               ...customerLead,
+              hrc: {
+                ...customerLead.hrc,
+              },
               parent_id: fields.parent_id ?? null,
             },
           },
@@ -424,8 +427,14 @@ export class CustomerLeadsService {
       'descue_primera_turquesa',
     ];
 
-    const project = discountFields.reduce((acc, curr) => {
-      return { ...acc, [curr]: 1 };
+    const bonoFields = [
+      'acumuladas_rosa',
+      'acumuladas_magenta',
+      'acumuladas_lila',
+    ];
+
+    const project = [...discountFields, ...bonoFields].reduce((acc, curr) => {
+      return { ...acc, [`hrc.${curr}`]: 1 };
     }, {});
 
     const customer = await this.customerLeadProvider
@@ -437,13 +446,16 @@ export class CustomerLeadsService {
     }
 
     const hasPercentageDiscount = discountFields.some(
-      (field) => customer[field],
+      (field) => customer.hrc[field],
     );
+
+    const hasBono = bonoFields.some((field) => customer.hrc[field]);
 
     const response: TissiniPlusResponse = {
       has_first_order_discount: hasPercentageDiscount,
+      has_bono: hasBono,
     };
 
-    return response;
+    return { response, customer };
   }
 }
