@@ -11,6 +11,7 @@ import {
   CustomerLead,
 } from '~core/interfaces/customer-lead.interface';
 import { NetsuiteRequest } from '~core/interfaces/netsuite-request.interface';
+import { TissiniPlusResponse } from '~core/interfaces/tissini-plus-response';
 
 import { EmployeesService } from '../employees/employees.service';
 
@@ -235,11 +236,14 @@ export class CustomerLeadsService {
       const exists = await this.customerLeadProvider.exists({ _id: fields.id });
       if (exists) {
         // Si el lead ya existe se actualiza
-        await this.customerLeadProvider.updateOne(
+        await this.customerLeadProvider.findOneAndUpdate(
           { _id: fields.id },
           {
             $set: {
               ...customerLead,
+              hrc: {
+                ...customerLead.hrc,
+              },
               parent_id: fields.parent_id ?? null,
             },
           },
@@ -405,9 +409,7 @@ export class CustomerLeadsService {
 
   async getByPhoneNumber(phoneNumber: string) {
     const customer = await this.customerLeadProvider.findOne(
-      {
-        mobilephone: phoneNumber,
-      },
+      { mobilephone: phoneNumber },
       { _id: 1 },
     );
 
@@ -416,5 +418,44 @@ export class CustomerLeadsService {
     }
 
     return customer;
+  }
+
+  async getTissiniPlus(id: number) {
+    const discountFields = [
+      'descue_primera_azul',
+      'descue_primera_celeste',
+      'descue_primera_turquesa',
+    ];
+
+    const bonoFields = [
+      'acumuladas_rosa',
+      'acumuladas_magenta',
+      'acumuladas_lila',
+    ];
+
+    const project = [...discountFields, ...bonoFields].reduce((acc, curr) => {
+      return { ...acc, [`hrc.${curr}`]: 1 };
+    }, {});
+
+    const customer = await this.customerLeadProvider
+      .findOne({ _id: id }, project)
+      .lean();
+
+    if (!customer) {
+      throw new NotFoundException();
+    }
+
+    const hasPercentageDiscount = discountFields.some(
+      (field) => customer.hrc[field],
+    );
+
+    const hasBono = bonoFields.some((field) => customer.hrc[field]);
+
+    const response: TissiniPlusResponse = {
+      has_first_order_discount: hasPercentageDiscount,
+      has_bono: hasBono,
+    };
+
+    return { response, customer };
   }
 }
