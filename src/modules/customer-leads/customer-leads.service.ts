@@ -458,4 +458,8 @@ export class CustomerLeadsService {
 
     return response;
   }
+
+  async getCaminoPlus(id: number) {
+    return this.customerLeadProvider.findOne({ _id: id }, { hrc: 1 });
+  }
 }
