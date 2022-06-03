@@ -116,4 +116,9 @@ export class CustomerLeadsController {
   async getTissiniPlus(@Param('id', new ParseIntPipe()) id: number) {
     return this.customerLeadsService.getTissiniPlus(id);
   }
+
+  @Get(':id/camino-plus')
+  async getCaminoPlus(@Param('id', new ParseIntPipe()) id: number) {
+    return this.customerLeadsService.getCaminoPlus(id);
+  }
 }
