@@ -456,6 +456,6 @@ export class CustomerLeadsService {
       has_bono: hasBono,
     };
 
-    return { response, customer };
+    return response;
   }
 }
