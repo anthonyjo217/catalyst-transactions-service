@@ -63,7 +63,7 @@ export class AddressLine {
   key: string;
 
   @IsOptional()
-  @Expose({ name: 'addressee_initialvalue' })
+  @Expose({ name: 'attention_initialvalue' })
   addresse: string;
 
   @IsOptional()
@@ -148,6 +148,26 @@ export class EmployeeFields {
 }
 
 export class Fields extends EmployeeFields {
+  @Transform(({ obj }) => obj['custentity_hrc_acumuladas_rosa'] === 'T')
+  @Expose({ name: 'custentity_hrc_acumuladas_rosa' })
+  acumuladas_rosa: boolean;
+
+  @Transform(({ obj }) => obj['custentity_hrc_acumuladas_magenta'] === 'T')
+  @Expose({ name: 'custentity_hrc_acumuladas_magenta' })
+  acumuladas_magenta: boolean;
+
+  @Transform(({ obj }) => obj['custentityhrc_acumuladas_lila'] === 'T')
+  @Expose({ name: 'custentityhrc_acumuladas_lila' })
+  acumuladas_lila: boolean;
+
+  @Transform(({ obj }) => obj['custentity_hrc_transicion_elite_a_plus'] === 'T')
+  @Expose({ name: 'custentity_hrc_transicion_elite_a_plus' })
+  transicion_elite_a_plus: boolean;
+
+  @Transform(({ obj }) => obj['custentity_hrc_tp_caminocreado'] === 'T')
+  @Expose({ name: 'custentity_hrc_tp_caminocreado' })
+  caminocreado: boolean;
+
   @Expose({ name: 'custentity_gender' })
   gender: string;
 

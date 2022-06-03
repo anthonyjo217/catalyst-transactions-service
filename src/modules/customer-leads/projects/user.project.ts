@@ -61,6 +61,7 @@ export const userProject: MongoProject<CustomerLead> = {
     tcoins_ganados: 1,
     tcoins_gastados: 1,
     tcoins_perdidos: 1,
+    customer_insignia: 1,
   },
 };
 

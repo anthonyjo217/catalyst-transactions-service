@@ -6,6 +6,21 @@ import { CustomerLeadHrc } from '~core/interfaces/customer-lead.interface';
 
 @Schema()
 export class CustomerLeadHrcModel implements CustomerLeadHrc {
+  @Prop()
+  acumuladas_rosa: boolean;
+
+  @Prop()
+  acumuladas_magenta: boolean;
+
+  @Prop()
+  acumuladas_lila: boolean;
+
+  @Prop()
+  transicion_elite_a_plus: boolean;
+
+  @Prop()
+  caminocreado: boolean;
+
   @Prop({ default: 0 })
   tcoins_ganados: number;
 
