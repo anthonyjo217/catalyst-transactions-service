@@ -63,7 +63,7 @@ export class AddressLine {
   key: string;
 
   @IsOptional()
-  @Expose({ name: 'addressee_initialvalue' })
+  @Expose({ name: 'attention_initialvalue' })
   addresse: string;
 
   @IsOptional()
