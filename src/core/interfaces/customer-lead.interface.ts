@@ -128,6 +128,7 @@ export interface CustomerLead extends User {
 }
 
 export interface CustomerLeadHrc {
+  compra10_lleva11_lila: boolean;
   acumuladas_rosa: boolean;
   acumuladas_magenta: boolean;
   acumuladas_lila: boolean;

@@ -7,6 +7,9 @@ import { CustomerLeadHrc } from '~core/interfaces/customer-lead.interface';
 @Schema()
 export class CustomerLeadHrcModel implements CustomerLeadHrc {
   @Prop()
+  compra10_lleva11_lila: boolean;
+
+  @Prop()
   acumuladas_rosa: boolean;
 
   @Prop()

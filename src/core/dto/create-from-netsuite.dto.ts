@@ -749,6 +749,10 @@ export class Fields extends EmployeeFields {
   @Expose({ name: 'custentity_hrc_compra10_lleva11_magenta' })
   compra10_lleva11_magenta: boolean;
 
+  @Transform(({ obj }) => obj['custentity_hrc_compra10_lleva11_lila'] === 'T')
+  @Expose({ name: 'custentity_hrc_compra10_lleva11_lila' })
+  compra10_lleva11_lila: boolean;
+
   @Transform(({ obj }) => obj['custentity_tissiniapp_rma_available'] === 'T')
   @Expose({ name: 'custentity_tissiniapp_rma_available' })
   rma_available: boolean;
