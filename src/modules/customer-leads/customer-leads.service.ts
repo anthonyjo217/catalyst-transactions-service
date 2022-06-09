@@ -454,6 +454,7 @@ export class CustomerLeadsService {
     const response: TissiniPlusResponse = {
       has_first_order_discount: hasPercentageDiscount,
       has_bono: hasBono,
+      has_discount: true,
     };
 
     return response;
