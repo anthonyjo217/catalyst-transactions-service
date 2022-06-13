@@ -157,6 +157,7 @@ export class EmployeesService {
       stage: 1,
       id_8x8: 1,
       is_logged_in: 1,
+      updated_email: 1,
     };
 
     if (withPassword) {
