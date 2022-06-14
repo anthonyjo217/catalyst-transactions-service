@@ -5,4 +5,5 @@ export interface Employee extends User {
   id_8x8: string;
   password?: string;
   is_logged_in?: boolean;
+  microsoft_graph_id?: string;
 }

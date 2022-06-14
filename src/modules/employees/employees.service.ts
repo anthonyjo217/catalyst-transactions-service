@@ -158,6 +158,7 @@ export class EmployeesService {
       id_8x8: 1,
       is_logged_in: 1,
       updated_email: 1,
+      microsoft_graph_id: 1,
     };
 
     if (withPassword) {
@@ -216,5 +217,27 @@ export class EmployeesService {
     const employee = await this.getByEmail(emailToCheck);
     const { email, firstname, lastname } = employee;
     return { email, firstname, lastname };
+  }
+
+  async addMicrosoftGraphId(id: number, microsoft_graph_id: string) {
+    try {
+      const exists = await this.employeeProvider.exists({ _id: id });
+
+      if (!exists) {
+        throw new NotFoundException('Employee not found');
+      }
+
+      this.employeeProvider.updateOne(
+        { _id: id },
+        { $set: { microsoft_graph_id } },
+        { new: true },
+      );
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }
