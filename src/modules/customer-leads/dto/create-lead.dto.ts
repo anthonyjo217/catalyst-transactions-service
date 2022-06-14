@@ -16,7 +16,6 @@ import {
 } from 'class-validator';
 
 // Estos son los DTO que se usan para crear o actualizar una lead desde el frontend
-
 export class CreateLeadDTO {
   @IsOptional()
   @Expose({ name: 'gender' })
