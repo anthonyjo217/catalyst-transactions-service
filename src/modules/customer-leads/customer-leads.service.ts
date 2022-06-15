@@ -433,7 +433,30 @@ export class CustomerLeadsService {
       'acumuladas_lila',
     ];
 
-    const project = [...discountFields, ...bonoFields].reduce((acc, curr) => {
+    const oneDollarFiels = [
+      'realiza3compras',
+      'realiza3compras_rosa',
+      'realiza3compras_celeste',
+      'realiza3compras_magenta',
+      'realiza3compras_azul',
+      'realiza3compras_lila',
+    ];
+
+    const take11Fields = [
+      'compra10_lleva11',
+      'compra10_lleva11_lila',
+      'compra10_lleva11_rosa',
+      'compra10_lleva11_magenta',
+    ];
+
+    const projectFields = [
+      ...discountFields,
+      ...bonoFields,
+      ...oneDollarFiels,
+      ...take11Fields,
+    ];
+
+    const project = projectFields.reduce((acc, curr) => {
       return { ...acc, [`hrc.${curr}`]: 1 };
     }, {});
 
@@ -450,11 +473,14 @@ export class CustomerLeadsService {
     );
 
     const hasBono = bonoFields.some((field) => customer.hrc[field]);
+    const hasOneDollar = oneDollarFiels.some((field) => customer.hrc[field]);
+    const hasTake11 = take11Fields.some((field) => customer.hrc[field]);
 
     const response: TissiniPlusResponse = {
       has_first_order_discount: hasPercentageDiscount,
       has_bono: hasBono,
-      has_discount: true,
+      has_onedollar: hasOneDollar,
+      has_pay10take11: hasTake11,
     };
 
     return response;

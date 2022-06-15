@@ -23,6 +23,9 @@ export class EmployeeModel extends UserModel implements Employee {
     default: false,
   })
   is_logged_in: boolean;
+
+  @Prop()
+  microsoft_graph_id: string;
 }
 
 export const EmployeeSchema = SchemaFactory.createForClass(EmployeeModel);
