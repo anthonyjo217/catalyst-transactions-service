@@ -425,6 +425,9 @@ export class CustomerLeadsService {
       'descue_primera_azul',
       'descue_primera_celeste',
       'descue_primera_turquesa',
+      'descue_primera_lila',
+      'descue_primera_rosa',
+      'descue_primera_magenta',
     ];
 
     const bonoFields = [
