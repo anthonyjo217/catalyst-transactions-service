@@ -227,11 +227,9 @@ export class EmployeesService {
         throw new NotFoundException('Employee not found');
       }
 
-      this.employeeProvider.updateOne(
-        { _id: id },
-        { $set: { microsoft_graph_id } },
-        { new: true },
-      );
+      this.employeeProvider
+        .findOneAndUpdate({ _id: exists._id }, { $set: { microsoft_graph_id } })
+        .exec();
 
       return {
         success: true,
