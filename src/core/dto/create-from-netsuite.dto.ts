@@ -182,18 +182,21 @@ export class Fields extends EmployeeFields {
     const parsed = Number(obj['custentity_hrc_tcoins_disponibles']);
     return isNaN(parsed) ? 0 : parsed;
   })
+  @Expose({ name: 'custentity_hrc_tcoins_disponibles' })
   tcoins_disponibles: number;
 
   @Transform(({ obj }) => {
     const parsed = Number(obj['custentity_hrc_tcoins_gastados']);
     return isNaN(parsed) ? 0 : parsed;
   })
+  @Expose({ name: 'custentity_hrc_tcoins_gastados' })
   tcoins_gastados: number;
 
   @Transform(({ obj }) => {
     const parsed = Number(obj['custentity_hrc_tcoins_perdidos']);
     return isNaN(parsed) ? 0 : parsed;
   })
+  @Expose({ name: 'custentity_hrc_tcoins_perdidos' })
   tcoins_perdidos: number;
 
   @Transform(({ obj }) => obj['custentity_hrc_realiza3compras_celeste'] === 'T')
