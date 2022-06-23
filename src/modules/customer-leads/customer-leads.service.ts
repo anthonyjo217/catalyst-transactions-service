@@ -464,7 +464,13 @@ export class CustomerLeadsService {
     }, {});
 
     const customer = await this.customerLeadProvider
-      .findOne({ _id: id }, project)
+      .findOne(
+        { _id: id },
+        {
+          ...project,
+          'hrc.envio_gratis_25_descuento': 1,
+        },
+      )
       .lean();
 
     if (!customer) {
@@ -484,6 +490,7 @@ export class CustomerLeadsService {
       has_bono: hasBono,
       has_onedollar: hasOneDollar,
       has_pay10take11: hasTake11,
+      has_free_shipping: customer.hrc.envio_gratis_25_descuento,
     };
 
     return response;
