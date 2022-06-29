@@ -410,7 +410,9 @@ export class CustomerLeadsService {
 
   async getByPhoneNumber(phoneNumber: string) {
     const customer = await this.customerLeadProvider.findOne(
-      { mobilephone: phoneNumber },
+      {
+        $or: [{ mobilephone: phoneNumber }, { mobilephone: `1${phoneNumber}` }],
+      },
       { _id: 1 },
     );
 

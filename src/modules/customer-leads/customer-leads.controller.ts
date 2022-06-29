@@ -128,7 +128,7 @@ export class CustomerLeadsController {
   @IsPublic()
   @ApiKey()
   @UseGuards(ApiKeyGuard)
-  @Patch(':id/t-coins')
+  @Post(':id/t-coins')
   async updateTCoins(@Body() dto, @Param('id', new ParseIntPipe()) id: number) {
     const dtoTranformed = plainToInstance(UpdateTCoinsDTO, dto, {
       enableImplicitConversion: true,
