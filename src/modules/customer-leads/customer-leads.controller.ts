@@ -9,6 +9,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
 
 import { ApiKey } from '~core/decorators/api-key.decorator';
 import { IsPublic } from '~core/decorators/is-public.decorator';
@@ -129,10 +130,9 @@ export class CustomerLeadsController {
   @ApiKey()
   @UseGuards(ApiKeyGuard)
   @Post(':id/t-coins')
-  async updateTCoins(
-    @Body() dto: UpdateTCoinsDTO,
-    @Param('id', new ParseIntPipe()) id: number,
-  ) {
-    return this.customerLeadsService.updateTCoins(dto, id);
+  async updateTCoins(@Body() dto, @Param('id', new ParseIntPipe()) id: number) {
+    const dtoFormatted = plainToInstance(UpdateTCoinsDTO, dto);
+
+    return this.customerLeadsService.updateTCoins(dtoFormatted, id);
   }
 }
