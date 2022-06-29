@@ -18,6 +18,7 @@ export const PlainBody = createParamDecorator<any, ExecutionContext>(
         const body = (await rawbody(request)).toString().trim();
 
         const parsed = JSON.parse(body);
+        console.log({ parsed });
 
         return data
           ? plainToInstance(data, parsed, {

@@ -130,7 +130,7 @@ export class CustomerLeadsController {
   @UseGuards(ApiKeyGuard)
   @Post(':id/t-coins')
   async updateTCoins(
-    @PlainBody(UpdateTCoinsDTO) dto: UpdateTCoinsDTO,
+    @Body() dto: UpdateTCoinsDTO,
     @Param('id', new ParseIntPipe()) id: number,
   ) {
     return this.customerLeadsService.updateTCoins(dto, id);
