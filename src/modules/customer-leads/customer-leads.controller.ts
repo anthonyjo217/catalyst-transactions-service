@@ -4,16 +4,15 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
   Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
 
 import { ApiKey } from '~core/decorators/api-key.decorator';
 import { IsPublic } from '~core/decorators/is-public.decorator';
+import { PlainBody } from '~core/decorators/plain-body.decorator';
 import { CreateFromNetsuiteDTO } from '~core/dto/create-from-netsuite.dto';
 import { PaginationParams } from '~core/interfaces/pagination-params.interface';
 
@@ -129,11 +128,10 @@ export class CustomerLeadsController {
   @ApiKey()
   @UseGuards(ApiKeyGuard)
   @Post(':id/t-coins')
-  async updateTCoins(@Body() dto, @Param('id', new ParseIntPipe()) id: number) {
-    const dtoTranformed = plainToInstance(UpdateTCoinsDTO, dto, {
-      enableImplicitConversion: true,
-      excludeExtraneousValues: true,
-    });
-    return this.customerLeadsService.updateTCoins(dtoTranformed, id);
+  async updateTCoins(
+    @PlainBody(UpdateTCoinsDTO) dto,
+    @Param('id', new ParseIntPipe()) id: number,
+  ) {
+    return this.customerLeadsService.updateTCoins(dto, id);
   }
 }
