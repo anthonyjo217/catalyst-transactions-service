@@ -21,6 +21,7 @@ import {
   CreateAddressToNetsuiteDTO,
   CreateToNetsuiteDTO,
 } from './dto/create-to-netsuite.dto';
+import { UpdateTCoinsDTO } from './dto/update-tcoins.dto';
 
 import { CustomerLeadModel } from './models/customer-lead.model';
 import { searchProject, userProject } from './projects/user.project';
@@ -498,5 +499,45 @@ export class CustomerLeadsService {
 
   async getCaminoPlus(id: number) {
     return this.customerLeadProvider.findOne({ _id: id }, { hrc: 1 });
+  }
+
+  async updateTCoins(dto: UpdateTCoinsDTO, id: number) {
+    try {
+      const customer = await this.customerLeadProvider.findOne(
+        { _id: id },
+        {
+          'hrc.tcoins_ganados': 1,
+          'hrc.tcoins_disponibles': 1,
+          'hrc.tcoins_gastados': 1,
+          'hrc.tcoins_perdidos': 1,
+        },
+      );
+
+      if (!customer) {
+        throw new NotFoundException(`Customer ${id} not found`);
+      }
+
+      await this.customerLeadProvider.findOneAndUpdate(
+        {
+          _id: id,
+        },
+        {
+          $set: {
+            'hrc.tcoins_ganados':
+              dto.tcoins_ganados || customer.hrc.tcoins_ganados,
+            'hrc.tcoins_disponibles':
+              dto.tcoins_disponibles || customer.hrc.tcoins_disponibles,
+            'hrc.tcoins_gastados':
+              dto.tcoins_gastados || customer.hrc.tcoins_gastados,
+            'hrc.tcoins_perdidos':
+              dto.tcoins_perdidos || customer.hrc.tcoins_perdidos,
+          },
+        },
+      );
+
+      return { success: true };
+    } catch (error) {
+      throw error;
+    }
   }
 }

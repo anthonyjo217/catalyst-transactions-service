@@ -4,11 +4,13 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
 
 import { ApiKey } from '~core/decorators/api-key.decorator';
 import { IsPublic } from '~core/decorators/is-public.decorator';
@@ -19,6 +21,7 @@ import { ApiKeyGuard } from '../auth/guards/api-key.guard';
 import { CustomerLeadsService } from './customer-leads.service';
 import { CreateLeadAddressDTO } from './dto/create-address.dto';
 import { CreateLeadDTO } from './dto/create-lead.dto';
+import { UpdateTCoinsDTO } from './dto/update-tcoins.dto';
 
 /**
  * Este controlador es para separar las logicas de negocio que están ligadas
@@ -120,5 +123,17 @@ export class CustomerLeadsController {
   @Get(':id/camino-plus')
   async getCaminoPlus(@Param('id', new ParseIntPipe()) id: number) {
     return this.customerLeadsService.getCaminoPlus(id);
+  }
+
+  @IsPublic()
+  @ApiKey()
+  @UseGuards(ApiKeyGuard)
+  @Patch(':id/t-coins')
+  async updateTCoins(@Body() dto, @Param('id', new ParseIntPipe()) id: number) {
+    const dtoTranformed = plainToInstance(UpdateTCoinsDTO, dto, {
+      enableImplicitConversion: true,
+      excludeExtraneousValues: true,
+    });
+    return this.customerLeadsService.updateTCoins(dtoTranformed, id);
   }
 }
