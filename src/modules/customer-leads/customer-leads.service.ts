@@ -537,7 +537,7 @@ export class CustomerLeadsService {
         },
       );
 
-      return { success: true };
+      return { success: true, dto, customer, id };
     } catch (error) {
       throw error;
     }
