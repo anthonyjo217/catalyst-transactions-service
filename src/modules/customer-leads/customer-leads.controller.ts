@@ -12,6 +12,7 @@ import {
 
 import { ApiKey } from '~core/decorators/api-key.decorator';
 import { IsPublic } from '~core/decorators/is-public.decorator';
+import { PlainBody } from '~core/decorators/plain-body.decorator';
 
 import { CreateFromNetsuiteDTO } from '~core/dto/create-from-netsuite.dto';
 import { PaginationParams } from '~core/interfaces/pagination-params.interface';
@@ -129,7 +130,7 @@ export class CustomerLeadsController {
   @UseGuards(ApiKeyGuard)
   @Post(':id/t-coins')
   async updateTCoins(
-    @Body() dto: UpdateTCoinsDTO,
+    @PlainBody(UpdateTCoinsDTO) dto: UpdateTCoinsDTO,
     @Param('id', new ParseIntPipe()) id: number,
   ) {
     return this.customerLeadsService.updateTCoins(dto, id);
