@@ -11,11 +11,13 @@ import * as rawbody from 'raw-body';
 
 export const PlainBody = createParamDecorator<any, ExecutionContext>(
   async (data, ctx) => {
+    console.log({ data });
     const request: Request = ctx.switchToHttp().getRequest();
 
     if (request.readable) {
       try {
         const body = (await rawbody(request)).toString().trim();
+
         const parsed = JSON.parse(body);
 
         return data
