@@ -13,7 +13,6 @@ import { plainToInstance } from 'class-transformer';
 
 import { ApiKey } from '~core/decorators/api-key.decorator';
 import { IsPublic } from '~core/decorators/is-public.decorator';
-import { PlainBody } from '~core/decorators/plain-body.decorator';
 
 import { CreateFromNetsuiteDTO } from '~core/dto/create-from-netsuite.dto';
 import { PaginationParams } from '~core/interfaces/pagination-params.interface';
@@ -22,6 +21,7 @@ import { ApiKeyGuard } from '../auth/guards/api-key.guard';
 import { CustomerLeadsService } from './customer-leads.service';
 import { CreateLeadAddressDTO } from './dto/create-address.dto';
 import { CreateLeadDTO } from './dto/create-lead.dto';
+import { RefreshDataDTO } from './dto/refresh-data.dto';
 import { UpdateTCoinsDTO } from './dto/update-tcoins.dto';
 
 /**
@@ -134,5 +134,11 @@ export class CustomerLeadsController {
     const dtoFormatted = plainToInstance(UpdateTCoinsDTO, dto);
 
     return this.customerLeadsService.updateTCoins(dtoFormatted, id);
+  }
+
+  @IsPublic()
+  @Post('refresh-data')
+  async refreshData(@Body() dto: RefreshDataDTO) {
+    return this.customerLeadsService.refreshData(dto.id);
   }
 }
