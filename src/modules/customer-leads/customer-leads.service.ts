@@ -542,4 +542,25 @@ export class CustomerLeadsService {
       throw error;
     }
   }
+
+  async refreshData(id: number) {
+    const request: NetsuiteRequest = {
+      method: 'CustomerController.refreshCustomer',
+      values: {
+        userId: id,
+      },
+    };
+
+    const service = this.configService.get('NETSUITE_SERVICE');
+    const key = this.configService.get('NETSUITE_API_KEY');
+
+    const { data } = await firstValueFrom(
+      this.httpService.post(service, request, {
+        headers: {
+          'X-API-KEY': key,
+        },
+      }),
+    );
+    return { data };
+  }
 }
