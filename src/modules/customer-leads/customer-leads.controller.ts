@@ -136,7 +136,6 @@ export class CustomerLeadsController {
     return this.customerLeadsService.updateTCoins(dtoFormatted, id);
   }
 
-  @IsPublic()
   @Post('refresh-data')
   async refreshData(@Body() dto: RefreshDataDTO) {
     return this.customerLeadsService.refreshData(dto.id);
