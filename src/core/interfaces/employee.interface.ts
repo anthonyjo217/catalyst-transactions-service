@@ -6,4 +6,5 @@ export interface Employee extends User {
   password?: string;
   is_logged_in?: boolean;
   microsoft_graph_id?: string;
+  updated_email?: string;
 }

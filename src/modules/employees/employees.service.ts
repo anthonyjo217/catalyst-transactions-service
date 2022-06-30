@@ -118,6 +118,7 @@ export class EmployeesService {
         password: '',
         recover_password_token: token,
         email: employee.email.toLowerCase(),
+        updated_email: employee.email.toLowerCase(),
       });
     }
     return { success: true };

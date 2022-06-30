@@ -26,6 +26,9 @@ export class EmployeeModel extends UserModel implements Employee {
 
   @Prop()
   microsoft_graph_id: string;
+
+  @Prop({ default: null })
+  updated_email?: string;
 }
 
 export const EmployeeSchema = SchemaFactory.createForClass(EmployeeModel);
