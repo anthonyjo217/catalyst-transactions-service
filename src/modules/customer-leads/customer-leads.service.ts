@@ -571,11 +571,7 @@ export class CustomerLeadsService {
   async deleteAddress(customerId: number, addressId: number) {
     const customer = await this.customerLeadProvider.findOne(
       { _id: customerId },
-      {
-        'addresses.defaultbilling': 1,
-        'addresses.defaultshipping': 1,
-        'addresses._id': 1,
-      },
+      { addresses: 1 },
     );
 
     if (!customer) {
@@ -597,11 +593,12 @@ export class CustomerLeadsService {
     }
 
     const filteredAddresses = addresses.filter(({ _id }) => _id !== addressId);
-    await this.customerLeadProvider.findOneAndUpdate(
+    const response = await this.customerLeadProvider.updateOne(
       { _id: customerId },
       { $set: { addresses: filteredAddresses } },
+      { new: true },
     );
 
-    return { success: true };
+    return { success: true, response };
   }
 }
