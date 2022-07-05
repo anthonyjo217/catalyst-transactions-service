@@ -1,5 +1,9 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginateModel, PaginateResult } from 'mongoose';
@@ -562,5 +566,42 @@ export class CustomerLeadsService {
       }),
     );
     return { data };
+  }
+
+  async deleteAddress(customerId: number, addressId: number) {
+    const customer = await this.customerLeadProvider.findOne(
+      { _id: customerId },
+      {
+        'addresses.defaultbilling': 1,
+        'addresses.defaultshipping': 1,
+        'addresses._id': 1,
+      },
+    );
+
+    if (!customer) {
+      throw new NotFoundException(`Customer ${customerId} not found`);
+    }
+
+    const { addresses } = customer;
+
+    const address = addresses.find(({ _id }) => _id === addressId);
+    if (!address) {
+      throw new NotFoundException(`Address ${addressId} not found`);
+    }
+
+    const canBeDeleted = !address.defaultshipping && addresses.length > 1;
+    if (!canBeDeleted) {
+      throw new BadRequestException(
+        `The address ${addressId} can't be deleted`,
+      );
+    }
+
+    const filteredAddresses = addresses.filter(({ _id }) => _id !== addressId);
+    await this.customerLeadProvider.findOneAndUpdate(
+      { _id: customerId },
+      { $set: { addresses: filteredAddresses } },
+    );
+
+    return { success: true };
   }
 }
