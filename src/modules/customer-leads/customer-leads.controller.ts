@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -139,5 +140,13 @@ export class CustomerLeadsController {
   @Post('refresh-data')
   async refreshData(@Body() dto: RefreshDataDTO) {
     return this.customerLeadsService.refreshData(dto.id);
+  }
+
+  @Delete(':id/addresses/:address_id')
+  async deleteAddress(
+    @Param('id', new ParseIntPipe()) id: number,
+    @Param('address_id', new ParseIntPipe()) addressId: number,
+  ) {
+    return this.customerLeadsService.deleteAddress(id, addressId);
   }
 }

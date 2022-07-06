@@ -1,5 +1,9 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginateModel, PaginateResult } from 'mongoose';
@@ -132,9 +136,11 @@ export class CustomerLeadsService {
 
     // Se ordenan las direcciones por default shipping
     const { addresses } = user;
-    const orderedAddresses = addresses.sort((a) => {
-      return a.defaultshipping ? -1 : 1;
-    });
+    const orderedAddresses = addresses
+      .filter(({ is_deleted }) => !is_deleted)
+      .sort((a) => {
+        return a.defaultshipping ? -1 : 1;
+      });
 
     let sales_rep = null;
     let referrer = null;
@@ -234,9 +240,28 @@ export class CustomerLeadsService {
       };
 
       // Se valida si el lead ya existe
-      const exists = await this.customerLeadProvider.exists({ _id: fields.id });
-      if (exists) {
+      const customer = await this.customerLeadProvider.findOne(
+        { _id: fields.id },
+        { addresses: 1 },
+      );
+      if (customer) {
         // Si el lead ya existe se actualiza
+        const { addresses } = customer;
+
+        const deletedAddresses = addresses.filter(
+          ({ is_deleted }) => is_deleted,
+        );
+
+        const mappedAddresses = customerLead.addresses.map((address) => {
+          const isDeleted = !!deletedAddresses.find(
+            ({ _id }) => _id === address._id,
+          );
+
+          return isDeleted ? { ...address, is_deleted: true } : address;
+        });
+
+        customerLead.addresses = mappedAddresses;
+
         await this.customerLeadProvider.findOneAndUpdate(
           { _id: fields.id },
           {
@@ -401,9 +426,11 @@ export class CustomerLeadsService {
 
     const { addresses } = customer;
 
-    const orderedAddresses = addresses.sort((a) => {
-      return a.defaultshipping ? -1 : 1;
-    });
+    const orderedAddresses = addresses
+      .filter(({ is_deleted }) => !is_deleted)
+      .sort((a) => {
+        return a.defaultshipping ? -1 : 1;
+      });
 
     return orderedAddresses;
   }
@@ -562,5 +589,53 @@ export class CustomerLeadsService {
       }),
     );
     return { data };
+  }
+
+  async deleteAddress(customerId: number, addressId: number) {
+    const customer = await this.customerLeadProvider.findOne(
+      { _id: customerId },
+      {
+        addresses: {
+          defaultbilling: 1,
+          defaultshipping: 1,
+          _id: 1,
+          is_deleted: 1,
+        },
+      },
+    );
+
+    if (!customer) {
+      throw new NotFoundException(`Customer ${customerId} not found`);
+    }
+
+    const { addresses } = customer;
+
+    const address = addresses.find(
+      ({ _id, is_deleted }) => _id === addressId && !is_deleted,
+    );
+    if (!address) {
+      throw new NotFoundException(`Address ${addressId} not found`);
+    }
+
+    const canBeDeleted = !address.defaultshipping && addresses.length > 1;
+    if (!canBeDeleted) {
+      throw new BadRequestException(
+        `The address ${addressId} can't be deleted`,
+      );
+    }
+
+    const response = await this.customerLeadProvider.updateOne(
+      {
+        _id: customerId,
+        'addresses._id': addressId,
+      },
+      {
+        $set: {
+          'addresses.$.is_deleted': true,
+        },
+      },
+    );
+
+    return { success: true, response };
   }
 }
