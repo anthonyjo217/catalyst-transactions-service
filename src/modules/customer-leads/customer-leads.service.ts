@@ -240,9 +240,28 @@ export class CustomerLeadsService {
       };
 
       // Se valida si el lead ya existe
-      const exists = await this.customerLeadProvider.exists({ _id: fields.id });
-      if (exists) {
+      const customer = await this.customerLeadProvider.findOne(
+        { _id: fields.id },
+        { addresses: 1 },
+      );
+      if (customer) {
         // Si el lead ya existe se actualiza
+        const { addresses } = customer;
+
+        const deletedAddresses = addresses.filter(
+          ({ is_deleted }) => is_deleted,
+        );
+
+        const mappedAddresses = customerLead.addresses.map((address) => {
+          const isDeleted = !!deletedAddresses.find(
+            ({ _id }) => _id === address._id,
+          );
+
+          return isDeleted ? { ...address, is_deleted: true } : address;
+        });
+
+        customerLead.addresses = mappedAddresses;
+
         await this.customerLeadProvider.findOneAndUpdate(
           { _id: fields.id },
           {
