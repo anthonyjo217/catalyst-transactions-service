@@ -13,4 +13,5 @@ export interface Address {
   phone: string;
   addresse: string;
   key: string;
+  is_deleted: boolean;
 }

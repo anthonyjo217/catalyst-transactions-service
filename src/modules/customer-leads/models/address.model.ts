@@ -46,6 +46,9 @@ export class AddressModel extends Document implements Address {
 
   @Prop()
   key: string;
+
+  @Prop({ default: false })
+  is_deleted: boolean;
 }
 
 export const AddressSchema = SchemaFactory.createForClass(AddressModel);

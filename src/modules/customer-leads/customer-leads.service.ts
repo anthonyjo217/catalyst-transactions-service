@@ -136,9 +136,11 @@ export class CustomerLeadsService {
 
     // Se ordenan las direcciones por default shipping
     const { addresses } = user;
-    const orderedAddresses = addresses.sort((a) => {
-      return a.defaultshipping ? -1 : 1;
-    });
+    const orderedAddresses = addresses
+      .filter(({ is_deleted }) => !is_deleted)
+      .sort((a) => {
+        return a.defaultshipping ? -1 : 1;
+      });
 
     let sales_rep = null;
     let referrer = null;
@@ -405,9 +407,11 @@ export class CustomerLeadsService {
 
     const { addresses } = customer;
 
-    const orderedAddresses = addresses.sort((a) => {
-      return a.defaultshipping ? -1 : 1;
-    });
+    const orderedAddresses = addresses
+      .filter(({ is_deleted }) => !is_deleted)
+      .sort((a) => {
+        return a.defaultshipping ? -1 : 1;
+      });
 
     return orderedAddresses;
   }
@@ -571,7 +575,14 @@ export class CustomerLeadsService {
   async deleteAddress(customerId: number, addressId: number) {
     const customer = await this.customerLeadProvider.findOne(
       { _id: customerId },
-      { addresses: 1 },
+      {
+        addresses: {
+          defaultbilling: 1,
+          defaultshipping: 1,
+          _id: 1,
+          is_deleted: 1,
+        },
+      },
     );
 
     if (!customer) {
@@ -580,7 +591,9 @@ export class CustomerLeadsService {
 
     const { addresses } = customer;
 
-    const address = addresses.find(({ _id }) => _id === addressId);
+    const address = addresses.find(
+      ({ _id, is_deleted }) => _id === addressId && !is_deleted,
+    );
     if (!address) {
       throw new NotFoundException(`Address ${addressId} not found`);
     }
@@ -592,11 +605,16 @@ export class CustomerLeadsService {
       );
     }
 
-    const filteredAddresses = addresses.filter(({ _id }) => _id !== addressId);
     const response = await this.customerLeadProvider.updateOne(
-      { _id: customerId },
-      { $set: { addresses: filteredAddresses } },
-      { new: true },
+      {
+        _id: customerId,
+        'addresses._id': addressId,
+      },
+      {
+        $set: {
+          'addresses.$.is_deleted': true,
+        },
+      },
     );
 
     return { success: true, response };
