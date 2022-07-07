@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   ForbiddenException,
+  Get,
   Param,
   ParseIntPipe,
   Patch,
@@ -65,5 +66,13 @@ export class EmployeesController {
       id,
       dto.microsoft_graph_id,
     );
+  }
+
+  @IsPublic()
+  @ApiKey()
+  @UseGuards(ApiKeyGuard)
+  @Get('leaders')
+  async getLeaders() {
+    return this.employeesService.getLeaders();
   }
 }
