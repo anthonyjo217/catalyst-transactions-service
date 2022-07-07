@@ -8,6 +8,9 @@ import { UserModel } from '~core/models/user.model';
 })
 export class EmployeeModel extends UserModel implements Employee {
   @Prop()
+  emp_status: string;
+
+  @Prop()
   queue_id_8x8: string;
 
   @Prop()
