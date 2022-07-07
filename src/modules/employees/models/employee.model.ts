@@ -8,6 +8,9 @@ import { UserModel } from '~core/models/user.model';
 })
 export class EmployeeModel extends UserModel implements Employee {
   @Prop({ default: null })
+  emp_status_id?: number;
+
+  @Prop({ default: null })
   emp_status: string;
 
   @Prop()

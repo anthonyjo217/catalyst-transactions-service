@@ -147,7 +147,9 @@ export class EmployeeFields {
   id_8x8: string;
 
   @Expose({ name: 'custentity_emp_status' })
-  emp_status?: string;
+  emp_status_id?: number;
+
+  emp_status: string;
 }
 
 export class Fields extends EmployeeFields {
