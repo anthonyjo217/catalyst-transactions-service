@@ -7,7 +7,7 @@ import { UserModel } from '~core/models/user.model';
   versionKey: false,
 })
 export class EmployeeModel extends UserModel implements Employee {
-  @Prop()
+  @Prop({ default: null })
   emp_status: string;
 
   @Prop()

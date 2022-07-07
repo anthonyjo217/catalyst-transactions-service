@@ -7,5 +7,5 @@ export interface Employee extends User {
   is_logged_in?: boolean;
   microsoft_graph_id?: string;
   updated_email?: string;
-  emp_status: string;
+  emp_status?: string;
 }
