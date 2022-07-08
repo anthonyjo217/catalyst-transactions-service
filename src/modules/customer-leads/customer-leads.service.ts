@@ -565,13 +565,13 @@ export class CustomerLeadsService {
         {
           $set: {
             'hrc.tcoins_ganados':
-              dto.tcoins_ganados || customer.hrc.tcoins_ganados,
+              dto.tcoins_ganados ?? customer.hrc.tcoins_ganados,
             'hrc.tcoins_disponibles':
-              dto.tcoins_disponibles || customer.hrc.tcoins_disponibles,
+              dto.tcoins_disponibles ?? customer.hrc.tcoins_disponibles,
             'hrc.tcoins_gastados':
-              dto.tcoins_gastados || customer.hrc.tcoins_gastados,
+              dto.tcoins_gastados ?? customer.hrc.tcoins_gastados,
             'hrc.tcoins_perdidos':
-              dto.tcoins_perdidos || customer.hrc.tcoins_perdidos,
+              dto.tcoins_perdidos ?? customer.hrc.tcoins_perdidos,
           },
         },
       )
