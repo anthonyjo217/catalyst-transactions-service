@@ -98,7 +98,7 @@ export class AuthService {
    * @param id number - id del usuario
    */
   async logout(id: number) {
-    return await this.employeesService.setIsLoggedIn(id, false);
+    return this.employeesService.setIsLoggedIn(id, false);
   }
 
   async phoneLogin(mobilephone: string) {

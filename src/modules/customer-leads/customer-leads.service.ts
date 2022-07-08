@@ -125,10 +125,10 @@ export class CustomerLeadsService {
    * @returns CustomerLeadModel
    */
   async findOne(id: number) {
-    // ! TODO pasar esto a una transacción
     const user = await this.customerLeadProvider
       .findOne({ _id: id }, userProject)
-      .lean();
+      .lean()
+      .exec();
 
     if (!user) {
       throw new NotFoundException();
@@ -162,17 +162,21 @@ export class CustomerLeadsService {
           { _id: `${user.parent_id}` },
           { _id: 1, firstname: 1, lastname: 1, entitynumber: 1 },
         )
-        .lean();
+        .lean()
+        .exec();
     }
 
     // Si el lead tiene un referrer se obtiene su información
     if (user.referred_by) {
-      referrer = await this.customerLeadProvider.findOne(
-        {
-          _id: +user.referred_by,
-        },
-        { _id: 1, firstname: 1, lastname: 1, entitynumber: 1 },
-      );
+      referrer = await this.customerLeadProvider
+        .findOne(
+          {
+            _id: +user.referred_by,
+          },
+          { _id: 1, firstname: 1, lastname: 1, entitynumber: 1 },
+        )
+        .lean()
+        .exec();
     }
 
     return {
@@ -240,15 +244,14 @@ export class CustomerLeadsService {
       };
 
       // Se valida si el lead ya existe
-      const customer = await this.customerLeadProvider.findOne(
-        { _id: fields.id },
-        { addresses: 1 },
-      );
+      const customer = await this.customerLeadProvider
+        .findOne({ _id: fields.id }, { addresses: 1 })
+        .lean()
+        .exec();
       if (customer) {
         // Si el lead ya existe se actualiza
-        const { addresses } = customer;
 
-        const deletedAddresses = addresses.filter(
+        const deletedAddresses = customer.addresses.filter(
           ({ is_deleted }) => is_deleted,
         );
 
@@ -262,18 +265,20 @@ export class CustomerLeadsService {
 
         customerLead.addresses = mappedAddresses;
 
-        await this.customerLeadProvider.findOneAndUpdate(
-          { _id: fields.id },
-          {
-            $set: {
-              ...customerLead,
-              hrc: {
-                ...customerLead.hrc,
+        await this.customerLeadProvider
+          .updateOne(
+            { _id: fields.id },
+            {
+              $set: {
+                ...customerLead,
+                hrc: {
+                  ...customerLead.hrc,
+                },
+                parent_id: fields.parent_id ?? null,
               },
-              parent_id: fields.parent_id ?? null,
             },
-          },
-        );
+          )
+          .exec();
       } else {
         // Si no existe se crea
         await this.customerLeadProvider.create(customerLead);
@@ -320,7 +325,8 @@ export class CustomerLeadsService {
             },
             { parent_id: 1 },
           )
-          .lean();
+          .lean()
+          .exec();
         isFinalClient = Boolean(leadIfExists.parent_id) && !lead.parent;
       }
 
@@ -415,10 +421,10 @@ export class CustomerLeadsService {
    * @param id - Customer ID
    */
   async getAddresses(id: number) {
-    const customer = await this.customerLeadProvider.findOne(
-      { _id: id },
-      { addresses: 1 },
-    );
+    const customer = await this.customerLeadProvider
+      .findOne({ _id: id }, { addresses: 1 })
+      .lean()
+      .exec();
 
     if (!customer) {
       throw new NotFoundException();
@@ -426,22 +432,26 @@ export class CustomerLeadsService {
 
     const { addresses } = customer;
 
-    const orderedAddresses = addresses
+    return addresses
       .filter(({ is_deleted }) => !is_deleted)
       .sort((a) => {
         return a.defaultshipping ? -1 : 1;
       });
-
-    return orderedAddresses;
   }
 
   async getByPhoneNumber(phoneNumber: string) {
-    const customer = await this.customerLeadProvider.findOne(
-      {
-        $or: [{ mobilephone: phoneNumber }, { mobilephone: `1${phoneNumber}` }],
-      },
-      { _id: 1 },
-    );
+    const customer = await this.customerLeadProvider
+      .findOne(
+        {
+          $or: [
+            { mobilephone: phoneNumber },
+            { mobilephone: `1${phoneNumber}` },
+          ],
+        },
+        { _id: 1 },
+      )
+      .lean()
+      .exec();
 
     if (!customer) {
       throw new NotFoundException('Customer not found');
@@ -501,7 +511,8 @@ export class CustomerLeadsService {
           'hrc.envio_gratis_25_descuento': 1,
         },
       )
-      .lean();
+      .lean()
+      .exec();
 
     if (!customer) {
       throw new NotFoundException();
@@ -531,8 +542,8 @@ export class CustomerLeadsService {
   }
 
   async updateTCoins(dto: UpdateTCoinsDTO, id: number) {
-    try {
-      const customer = await this.customerLeadProvider.findOne(
+    const customer = await this.customerLeadProvider
+      .findOne(
         { _id: id },
         {
           'hrc.tcoins_ganados': 1,
@@ -540,34 +551,33 @@ export class CustomerLeadsService {
           'hrc.tcoins_gastados': 1,
           'hrc.tcoins_perdidos': 1,
         },
-      );
+      )
+      .lean()
+      .exec();
 
-      if (!customer) {
-        throw new NotFoundException(`Customer ${id} not found`);
-      }
+    if (!customer) {
+      throw new NotFoundException(`Customer ${id} not found`);
+    }
 
-      await this.customerLeadProvider.findOneAndUpdate(
-        {
-          _id: id,
-        },
+    await this.customerLeadProvider
+      .updateOne(
+        { _id: id },
         {
           $set: {
             'hrc.tcoins_ganados':
-              dto.tcoins_ganados || customer.hrc.tcoins_ganados,
+              dto.tcoins_ganados ?? customer.hrc.tcoins_ganados,
             'hrc.tcoins_disponibles':
-              dto.tcoins_disponibles || customer.hrc.tcoins_disponibles,
+              dto.tcoins_disponibles ?? customer.hrc.tcoins_disponibles,
             'hrc.tcoins_gastados':
-              dto.tcoins_gastados || customer.hrc.tcoins_gastados,
+              dto.tcoins_gastados ?? customer.hrc.tcoins_gastados,
             'hrc.tcoins_perdidos':
-              dto.tcoins_perdidos || customer.hrc.tcoins_perdidos,
+              dto.tcoins_perdidos ?? customer.hrc.tcoins_perdidos,
           },
         },
-      );
+      )
+      .exec();
 
-      return { success: true, dto, customer, id };
-    } catch (error) {
-      throw error;
-    }
+    return { success: true, dto, customer, id };
   }
 
   async refreshData(id: number) {
@@ -592,17 +602,20 @@ export class CustomerLeadsService {
   }
 
   async deleteAddress(customerId: number, addressId: number) {
-    const customer = await this.customerLeadProvider.findOne(
-      { _id: customerId },
-      {
-        addresses: {
-          defaultbilling: 1,
-          defaultshipping: 1,
-          _id: 1,
-          is_deleted: 1,
+    const customer = await this.customerLeadProvider
+      .findOne(
+        { _id: customerId },
+        {
+          addresses: {
+            defaultbilling: 1,
+            defaultshipping: 1,
+            _id: 1,
+            is_deleted: 1,
+          },
         },
-      },
-    );
+      )
+      .lean()
+      .exec();
 
     if (!customer) {
       throw new NotFoundException(`Customer ${customerId} not found`);
@@ -624,17 +637,19 @@ export class CustomerLeadsService {
       );
     }
 
-    const response = await this.customerLeadProvider.updateOne(
-      {
-        _id: customerId,
-        'addresses._id': addressId,
-      },
-      {
-        $set: {
-          'addresses.$.is_deleted': true,
+    const response = await this.customerLeadProvider
+      .updateOne(
+        {
+          _id: customerId,
+          'addresses._id': addressId,
         },
-      },
-    );
+        {
+          $set: {
+            'addresses.$.is_deleted': true,
+          },
+        },
+      )
+      .exec();
 
     return { success: true, response };
   }

@@ -38,7 +38,7 @@ export class EmployeesController {
    */
   @Post(':id/netsuite')
   async createFromNetsuite(@Body() dto: CreateFromNetsuiteDTO) {
-    return await this.employeesService.create(dto.fields);
+    return this.employeesService.create(dto.fields);
   }
 
   @Patch(':id')
@@ -51,7 +51,7 @@ export class EmployeesController {
       throw new ForbiddenException();
     }
 
-    return await this.employeesService.update(id, dto);
+    return this.employeesService.update(id, dto);
   }
 
   @IsPublic()
@@ -62,7 +62,7 @@ export class EmployeesController {
     @Param('id', new ParseIntPipe()) id: number,
     @Body() dto: { microsoft_graph_id: string },
   ) {
-    return await this.employeesService.addMicrosoftGraphId(
+    return this.employeesService.addMicrosoftGraphId(
       id,
       dto.microsoft_graph_id,
     );
