@@ -76,18 +76,22 @@ export class EmployeesService {
       stage: 'EMPLOYEE',
     };
 
-    const exists = await this.employeeProvider.exists({ _id: employee._id });
+    const exists = await this.employeeProvider
+      .exists({ _id: employee._id })
+      .exec();
 
     if (exists) {
       const { email, ...rest } = employee;
-      await this.employeeProvider.updateOne(
-        { _id: employee._id },
-        {
-          $set: {
-            ...rest,
+      await this.employeeProvider
+        .updateOne(
+          { _id: employee._id },
+          {
+            $set: {
+              ...rest,
+            },
           },
-        },
-      );
+        )
+        .exec();
     } else {
       const params = {
         createPassword: true,
@@ -166,19 +170,19 @@ export class EmployeesService {
       project['password'] = 1;
     }
 
-    const result = await this.employeeProvider.aggregate([
-      {
-        $project: {
-          ...project,
-          email: { $toLower: '$email' },
+    const result = await this.employeeProvider
+      .aggregate([
+        {
+          $project: {
+            ...project,
+            email: { $toLower: '$email' },
+          },
         },
-      },
-      {
-        $match: {
-          email: email.toLowerCase(),
+        {
+          $match: { email: email.toLowerCase() },
         },
-      },
-    ]);
+      ])
+      .exec();
 
     return result[0];
   }
@@ -205,7 +209,8 @@ export class EmployeesService {
   async getBy88Id(id: string) {
     const employee = await this.employeeProvider
       .findOne({ id_8x8: id }, { _id: 1 })
-      .lean();
+      .lean()
+      .exec();
 
     if (!employee) {
       throw new NotFoundException('Employee not found');
@@ -221,7 +226,7 @@ export class EmployeesService {
   }
 
   async addMicrosoftGraphId(id: number, microsoft_graph_id: string) {
-    const exists = await this.employeeProvider.exists({ _id: id });
+    const exists = await this.employeeProvider.exists({ _id: id }).exec();
 
     if (!exists) {
       throw new NotFoundException('Employee not found');
