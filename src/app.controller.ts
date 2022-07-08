@@ -106,9 +106,9 @@ export class AppController {
   @Post(':id')
   async createFromNetsuite(@Body() dto: CreateFromNetsuiteDTO) {
     if (dto.type === USER_TYPES.SALESREP) {
-      return await this.employeeService.create(dto.fields);
+      return this.employeeService.create(dto.fields);
     } else {
-      return await this.customerLeadService.create(dto);
+      return this.customerLeadService.create(dto);
     }
   }
 

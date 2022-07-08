@@ -113,7 +113,7 @@ export class CustomerLeadsController {
    */
   @Post(':id/netsuite')
   async createFromNetsuite(@Body() dto: CreateFromNetsuiteDTO) {
-    return await this.customerLeadsService.create(dto);
+    return this.customerLeadsService.create(dto);
   }
 
   @IsPublic()

@@ -246,9 +246,8 @@ export class CustomerLeadsService {
       );
       if (customer) {
         // Si el lead ya existe se actualiza
-        const { addresses } = customer;
 
-        const deletedAddresses = addresses.filter(
+        const deletedAddresses = customer.addresses.filter(
           ({ is_deleted }) => is_deleted,
         );
 
@@ -426,13 +425,11 @@ export class CustomerLeadsService {
 
     const { addresses } = customer;
 
-    const orderedAddresses = addresses
+    return addresses
       .filter(({ is_deleted }) => !is_deleted)
       .sort((a) => {
         return a.defaultshipping ? -1 : 1;
       });
-
-    return orderedAddresses;
   }
 
   async getByPhoneNumber(phoneNumber: string) {
@@ -531,43 +528,39 @@ export class CustomerLeadsService {
   }
 
   async updateTCoins(dto: UpdateTCoinsDTO, id: number) {
-    try {
-      const customer = await this.customerLeadProvider.findOne(
-        { _id: id },
-        {
-          'hrc.tcoins_ganados': 1,
-          'hrc.tcoins_disponibles': 1,
-          'hrc.tcoins_gastados': 1,
-          'hrc.tcoins_perdidos': 1,
-        },
-      );
+    const customer = await this.customerLeadProvider.findOne(
+      { _id: id },
+      {
+        'hrc.tcoins_ganados': 1,
+        'hrc.tcoins_disponibles': 1,
+        'hrc.tcoins_gastados': 1,
+        'hrc.tcoins_perdidos': 1,
+      },
+    );
 
-      if (!customer) {
-        throw new NotFoundException(`Customer ${id} not found`);
-      }
-
-      await this.customerLeadProvider.findOneAndUpdate(
-        {
-          _id: id,
-        },
-        {
-          $set: {
-            'hrc.tcoins_ganados':
-              dto.tcoins_ganados || customer.hrc.tcoins_ganados,
-            'hrc.tcoins_disponibles':
-              dto.tcoins_disponibles || customer.hrc.tcoins_disponibles,
-            'hrc.tcoins_gastados':
-              dto.tcoins_gastados || customer.hrc.tcoins_gastados,
-            'hrc.tcoins_perdidos':
-              dto.tcoins_perdidos || customer.hrc.tcoins_perdidos,
-          },
-        },
-      );
-
-      return { success: true, dto, customer, id };
-    } catch (error) {
-      throw error;
+    if (!customer) {
+      throw new NotFoundException(`Customer ${id} not found`);
     }
+
+    await this.customerLeadProvider.findOneAndUpdate(
+      {
+        _id: id,
+      },
+      {
+        $set: {
+          'hrc.tcoins_ganados':
+            dto.tcoins_ganados || customer.hrc.tcoins_ganados,
+          'hrc.tcoins_disponibles':
+            dto.tcoins_disponibles || customer.hrc.tcoins_disponibles,
+          'hrc.tcoins_gastados':
+            dto.tcoins_gastados || customer.hrc.tcoins_gastados,
+          'hrc.tcoins_perdidos':
+            dto.tcoins_perdidos || customer.hrc.tcoins_perdidos,
+        },
+      },
+    );
+
+    return { success: true, dto, customer, id };
   }
 
   async refreshData(id: number) {

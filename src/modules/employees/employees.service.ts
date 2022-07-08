@@ -221,23 +221,19 @@ export class EmployeesService {
   }
 
   async addMicrosoftGraphId(id: number, microsoft_graph_id: string) {
-    try {
-      const exists = await this.employeeProvider.exists({ _id: id });
+    const exists = await this.employeeProvider.exists({ _id: id });
 
-      if (!exists) {
-        throw new NotFoundException('Employee not found');
-      }
-
-      this.employeeProvider
-        .findOneAndUpdate({ _id: exists._id }, { $set: { microsoft_graph_id } })
-        .exec();
-
-      return {
-        success: true,
-      };
-    } catch (error) {
-      throw error;
+    if (!exists) {
+      throw new NotFoundException('Employee not found');
     }
+
+    this.employeeProvider
+      .findOneAndUpdate({ _id: exists._id }, { $set: { microsoft_graph_id } })
+      .exec();
+
+    return {
+      success: true,
+    };
   }
 
   getLeaders() {

@@ -222,7 +222,7 @@ export class Fields extends EmployeeFields {
   @Expose({ name: 'custentity_foco_rfm' })
   foco_rfm: boolean;
 
-  // TODO transform to valid date format
+  
   startdate: string;
 
   @Transform(({ obj }) => obj['unsubscribe'] === 'T')
@@ -240,7 +240,7 @@ export class Fields extends EmployeeFields {
   @Transform(({ value }) => value)
   consolbalance: string;
 
-  // TODO transform to valid date format
+  
   custentity_plan_elite_inicio: string;
 
   @Transform(({ value }) => value)
@@ -251,10 +251,10 @@ export class Fields extends EmployeeFields {
   @Expose({ name: 'custentity_tj_exempt_customer_type' })
   tj_exempt_customer_type: string;
 
-  // TODO transform to valid date format
+  
   datecreated: string;
 
-  // TODO transform to valid date format
+  
   custentity_esc_last_modified_date: string;
 
   @Transform(({ value }) => value)
@@ -272,7 +272,7 @@ export class Fields extends EmployeeFields {
   @Transform(({ value }) => value)
   overduebalance: string;
 
-  // TODO transform to valid date format
+  
   custentity_date_invoicecount_start: string;
 
   @Transform(
@@ -477,7 +477,7 @@ export class Fields extends EmployeeFields {
   @Expose({ name: 'custentity_state_restriction_override' })
   state_restriction_override: boolean;
 
-  // TODO transform to valid date format
+  
   custentity_last_call_date: string;
 
   @Transform(({ value }) => value)
@@ -550,7 +550,7 @@ export class Fields extends EmployeeFields {
   @Transform(({ value }) => Number(value))
   id: number;
 
-  // TODO transform to valid date format
+  
   @IsString()
   @Expose({ name: 'custentity1' })
   birthdate: string;
@@ -734,7 +734,7 @@ export class Fields extends EmployeeFields {
   @Expose({ name: 'custentity_hrc_descue_primera_magenta' })
   descue_primera_magenta: boolean;
 
-  // TODO transform to valid date format
+  
   custentity_fecha_asignacion_ritual: string;
 
   @Transform(({ obj }) => obj['custentity_ship_to_walgreens'] === 'T')
@@ -781,7 +781,7 @@ export class Fields extends EmployeeFields {
   @Expose({ name: 'custentity_hrc_beneficio_dias_cambio_ad' })
   beneficio_dias_cambio_ad: boolean;
 
-  // TODO transform to valid date format
+  
   lastmodifieddate: string;
 
   @Transform(({ obj }) => obj['custentity_communicate_through_sms'] === 'T')
