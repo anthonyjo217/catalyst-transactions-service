@@ -241,11 +241,13 @@ export class EmployeesService {
   }
 
   getLeaders() {
-    return this.employeeProvider.find(
-      {
-        emp_status: { $in: [/^lider/i, /^jefe/i, /^director/i] },
-      },
-      { emp_status: 1, entityid: 1, _id: 1 },
-    );
+    return this.employeeProvider
+      .find(
+        {
+          emp_status: { $in: [/^lider/i, /^jefe/i, /^director/i] },
+        },
+        { emp_status: 1, entityid: 1, _id: 1 },
+      )
+      .sort('entityid');
   }
 }
