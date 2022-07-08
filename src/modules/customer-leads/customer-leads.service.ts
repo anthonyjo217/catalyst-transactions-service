@@ -125,7 +125,6 @@ export class CustomerLeadsService {
    * @returns CustomerLeadModel
    */
   async findOne(id: number) {
-    // ! TODO pasar esto a una transacción
     const user = await this.customerLeadProvider
       .findOne({ _id: id }, userProject)
       .lean()
