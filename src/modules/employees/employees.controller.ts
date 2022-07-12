@@ -75,4 +75,10 @@ export class EmployeesController {
   async getLeaders() {
     return this.employeesService.getLeaders();
   }
+
+  @IsPublic()
+  @Get(':id/free-shipping')
+  async freeShippingBySalesrep(@Param('id', new ParseIntPipe()) id: number) {
+    return this.employeesService.freeShippingBySalesrep(id);
+  }
 }
