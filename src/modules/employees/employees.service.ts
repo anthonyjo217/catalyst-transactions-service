@@ -1,6 +1,9 @@
+import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { HttpService } from '@nestjs/axios';
+
+import { firstValueFrom } from 'rxjs';
 import { Model } from 'mongoose';
 import * as brcypt from 'bcrypt';
 
@@ -10,8 +13,6 @@ import { Employee } from '~core/interfaces/employee.interface';
 import { EmployeeModel } from './models/employee.model';
 import { UpdateEmployeeDTO } from './dto/update-employee.dto';
 import generatePasswordUrl from '../../helpers/generate-password-url';
-import { firstValueFrom } from 'rxjs';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EmployeesService {
@@ -250,5 +251,24 @@ export class EmployeesService {
         { emp_status: 1, entityid: 1, _id: 1 },
       )
       .sort('entityid');
+  }
+
+  async freeShippingBySalesrep(id: number) {
+    const employee = await this.employeeProvider.findOne(
+      { _id: id },
+      { emp_status: 1 },
+    );
+
+    let has_free_shipping = false;
+
+    if (employee.emp_status) {
+      has_free_shipping = employee.emp_status
+        .toLocaleLowerCase()
+        .includes('desarrollo');
+    }
+
+    return {
+      has_free_shipping,
+    };
   }
 }
