@@ -14,6 +14,7 @@ async function bootstrap() {
       'https://ts.tissini.cloud',
       'https://seller.tissini.build',
       'https://seller.tissini.cloud',
+      'https://tissini.app/',
       'http://localhost:3000',
       'http://localhost:8080',
       'http://localhost:8081',
