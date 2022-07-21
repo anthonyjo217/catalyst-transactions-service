@@ -10,9 +10,11 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { ApiKey } from '~core/decorators/api-key.decorator';
 import { IsPublic } from '~core/decorators/is-public.decorator';
 
 import { CreateFromNetsuiteDTO } from '~core/dto/create-from-netsuite.dto';
+import { ApiKeyGuard } from '~core/guards/api-key.guard';
 import { BearerTokenGuard } from '~core/guards/bearer-token.guard';
 import { UpdateEmployeeDTO } from './dto/update-employee.dto';
 import { EmployeesService } from './employees.service';
@@ -54,7 +56,8 @@ export class EmployeesController {
   }
 
   @IsPublic()
-  @UseGuards(BearerTokenGuard)
+  @ApiKey()
+  @UseGuards(ApiKeyGuard)
   @Patch(':id/microsoft-graph-id')
   async addMicrosoftGraphId(
     @Param('id', new ParseIntPipe()) id: number,
