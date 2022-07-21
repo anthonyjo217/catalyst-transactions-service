@@ -16,6 +16,7 @@ import { ApiKey } from '~core/decorators/api-key.decorator';
 import { IsPublic } from '~core/decorators/is-public.decorator';
 
 import { CreateFromNetsuiteDTO } from '~core/dto/create-from-netsuite.dto';
+import { BearerTokenGuard } from '~core/guards/bearer-token.guard';
 import { PaginationParams } from '~core/interfaces/pagination-params.interface';
 
 import { ApiKeyGuard } from '../auth/guards/api-key.guard';
@@ -77,8 +78,7 @@ export class CustomerLeadsController {
    * @returns Promise<any>
    */
   @IsPublic()
-  @ApiKey()
-  @UseGuards(ApiKeyGuard)
+  @UseGuards(BearerTokenGuard)
   @Get(':id/addresses')
   async getAddresses(@Param('id') id: string) {
     return this.customerLeadsService.getAddresses(+id);
