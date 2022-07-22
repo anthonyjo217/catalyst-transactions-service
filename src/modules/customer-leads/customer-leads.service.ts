@@ -1,3 +1,4 @@
+import * as getLocalInfo from '@er1c/chronomouse';
 import { HttpService } from '@nestjs/axios';
 import {
   BadRequestException,
@@ -8,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginateModel, PaginateResult } from 'mongoose';
 import { firstValueFrom } from 'rxjs';
+import { getTimeZone, TimeZoneI } from 'src/helpers/time-zone-list';
 
 import { CreateFromNetsuiteDTO } from '~core/dto/create-from-netsuite.dto';
 import {
@@ -179,12 +181,20 @@ export class CustomerLeadsService {
         .exec();
     }
 
+    const timeZone: TimeZoneI = getTimeZone(user.time_zone);
+    const phoneNumber: string = user.mobilephone.slice(0, 3);
+    const currentTime: string =
+      timeZone !== undefined
+        ? getLocalInfo(timeZone?.Code, { military: false }).time.display
+        : getLocalInfo(phoneNumber, { military: false }).time.display;
+
     return {
       ...user,
       addresses: orderedAddresses,
       sales_rep,
       referrer,
       parent,
+      currentTime,
     };
   }
 
