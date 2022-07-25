@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios';
 import {
   Body,
   Controller,
@@ -10,6 +11,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { firstValueFrom } from 'rxjs';
 import { ApiKey } from '~core/decorators/api-key.decorator';
 import { IsPublic } from '~core/decorators/is-public.decorator';
 
@@ -29,7 +31,10 @@ import { EmployeesService } from './employees.service';
   version: '1',
 })
 export class EmployeesController {
-  constructor(private readonly employeesService: EmployeesService) {}
+  constructor(
+    private readonly employeesService: EmployeesService,
+    private httpService: HttpService,
+  ) {}
 
   /**
    * Crea o actualiza un usuario
@@ -80,5 +85,16 @@ export class EmployeesController {
   @Get(':id/free-shipping')
   async freeShippingBySalesrep(@Param('id', new ParseIntPipe()) id: number) {
     return this.employeesService.freeShippingBySalesrep(id);
+  }
+
+  @IsPublic()
+  @Post('/product-by-variants')
+  async getProductsByVariantsIds(@Body() dto: number[]) {
+    const start = new Date().valueOf();
+    const { data } = await firstValueFrom(
+      this.httpService.post('http://localhost:3000/v1/products/variants', dto),
+    );
+    const end = new Date().valueOf();
+    return { data, start, end };
   }
 }
