@@ -92,7 +92,10 @@ export class EmployeesController {
   async getProductsByVariantsIds(@Body() dto: number[]) {
     const start = new Date().valueOf();
     const { data } = await firstValueFrom(
-      this.httpService.post('http://localhost:3000/v1/products/variants', dto),
+      this.httpService.post(
+        'https://c-ps.tissini.build/v1/products/variants',
+        dto,
+      ),
     );
     const end = new Date().valueOf();
     return { data, start, end };
