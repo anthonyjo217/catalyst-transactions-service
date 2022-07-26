@@ -355,8 +355,6 @@ export class CustomerLeadsService {
         values: lead,
       };
 
-      return { request };
-
       const service = this.configService.get('NETSUITE_SERVICE');
       const key = this.configService.get('NETSUITE_API_KEY');
 
