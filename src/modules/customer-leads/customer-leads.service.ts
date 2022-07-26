@@ -188,6 +188,11 @@ export class CustomerLeadsService {
         ? getLocalInfo(timeZone?.Code, { military: false }).time.display
         : getLocalInfo(phoneNumber, { military: false }).time.display;
 
+    const now = new Date();
+
+    const is_birthday = user.birthday === now.getDate().toString();
+    const is_birthmonth = user.birthmonth === (now.getMonth() + 1).toString();
+
     return {
       ...user,
       addresses: orderedAddresses,
@@ -195,6 +200,8 @@ export class CustomerLeadsService {
       referrer,
       parent,
       currentTime,
+      is_birthday,
+      is_birthmonth,
     };
   }
 
