@@ -194,6 +194,21 @@ export class CreateLeadDTO {
   @IsBoolean()
   @Expose({ name: 'ship_to_walgreens' })
   custentity_ship_to_walgreens: boolean;
+
+  @IsOptional()
+  @IsNumberString()
+  @Expose({ name: 'birthday' })
+  custentity_birthday: string;
+
+  @IsOptional()
+  @IsNumberString()
+  @Expose({ name: 'birthmonth' })
+  custentity_birthmonth: string;
+
+  @IsOptional()
+  @IsNumberString()
+  @Expose({ name: 'birthyear' })
+  custentity_birthyear: string;
 }
 
 export class CreateAddressDTO {

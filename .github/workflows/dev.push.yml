@@ -20,7 +20,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ secrets.DEV_AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -45,7 +45,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ secrets.DEV_AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -56,7 +56,7 @@ jobs:
         env:
           KUBECTL_VERSION: 'v1.22.0'
           IAM_VERSION: '0.5.6'
-          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+          KUBE_CONFIG_DATA: ${{ secrets.DEV_KUBE_CONFIG_DATA }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: dev-catalyst-user-service
           IMAGE_TAG: ${{ github.sha }}
@@ -69,7 +69,7 @@ jobs:
         env:
           KUBECTL_VERSION: 'v1.22.0'
           IAM_VERSION: '0.5.6'
-          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+          KUBE_CONFIG_DATA: ${{ secrets.DEV_KUBE_CONFIG_DATA }}
           K8S_NS: dev-catalyst-user-service
         with:
           args: -n $K8S_NS rollout status deployment.apps/dev-catalyst-user-service-deployment

@@ -1,6 +1,9 @@
 // Estas interfaces son usadas para validar los DTO que se usan para crear o actualizar una lead a netsuite
 
 export interface CreateToNetsuiteDTO {
+  custentity_birthday: string;
+  custentity_birthmonth: string;
+  custentity_birthyear: string;
   id?: string;
   firstname: string;
   lastname: string;
