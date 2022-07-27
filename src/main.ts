@@ -38,6 +38,6 @@ async function bootstrap() {
     }),
   );
   await app.listen(port);
-  Logger.log(`🚀 USER-SERVICE IS RUNNING IN PORT: ${port}`);
+  Logger.log(`🚀 TRANSACTIONS-SERVICE IS RUNNING IN PORT: ${port}`);
 }
 bootstrap();
