@@ -17,7 +17,7 @@ import { IsPublic } from '~core/decorators/is-public.decorator';
 
 import { CreateFromNetsuiteDTO } from '~core/dto/create-from-netsuite.dto';
 import { ApiKeyGuard } from '~core/guards/api-key.guard';
-import { BearerTokenGuard } from '~core/guards/bearer-token.guard';
+
 import { UpdateEmployeeDTO } from './dto/update-employee.dto';
 import { EmployeesService } from './employees.service';
 
@@ -75,7 +75,8 @@ export class EmployeesController {
   }
 
   @IsPublic()
-  @UseGuards(BearerTokenGuard)
+  @ApiKey()
+  @UseGuards(ApiKeyGuard)
   @Get('leaders')
   async getLeaders() {
     return this.employeesService.getLeaders();
